@@ -13,61 +13,72 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
      ui->setupUi(this);
+     // Creating charts for altitude, pressure, outside temperature (t2) and battery voltage (vbat)
      chart_alt = new QChart;
      chart_prs = new QChart;
      chart_t2 = new QChart;
      chart_vbat = new QChart;
 
+     // Creating QLineSeries containers for charts
      series_alt = new QLineSeries;
      series_prs = new QLineSeries;
      series_t2 = new QLineSeries;
      series_vbat = new QLineSeries;
 
+     // Conencting an QChart objects with QWidget objects in UI
      ui->altchart->setChart(chart_alt);
      ui->prschart->setChart(chart_prs);
      ui->t2chart->setChart(chart_t2);
      ui->vbatchart->setChart(chart_vbat);
 
-     chart_alt->legend()->hide();
-     chart_alt->addSeries(series_alt);
+     // Altitude chart setting
+     chart_alt->legend()->hide(); // hide legend
+     chart_alt->addSeries(series_alt); // connecting with QLineSeries
+     chart_alt->setTitle("Altitude chart"); // title of chart
+     // Altitude chart axis setting
+     axisX_alt = new QValueAxis; // creating a QValueAxis class for X axis of altitude chart
+     axisX_alt->setLabelFormat("%i"); // setting a value axis label format
+     axisX_alt->setTitleText("Seconds"); // title of value axis
+     axisX_alt->setMin(0); // minimal value of X axis (estimated time)
+     axisX_alt->setMax(1); // first maximal value of X axis, will be changed (check updateData() func.)
+     chart_alt->addAxis(axisX_alt, Qt::AlignBottom); // connecting X value axis with altitude chart
+     series_alt->attachAxis(axisX_alt); // connecting QLineSeries container with X value axis
 
-     axisX_alt = new QValueAxis;
-     axisX_alt->setLabelFormat("%i");
-     axisX_alt->setTitleText("Seconds");
-     axisX_alt->setMin(0);
-     axisX_alt->setMax(1);
-     chart_alt->addAxis(axisX_alt, Qt::AlignBottom);
-     series_alt->attachAxis(axisX_alt);
-     axisY_alt = new QValueAxis;
-     axisY_alt->setLabelFormat("%i");
-     axisY_alt->setTitleText("Altitude");
-     axisY_alt->setMax(1000);
-     axisY_alt->setMin(0);
-     chart_alt->addAxis(axisY_alt, Qt::AlignLeft);
-     series_alt->attachAxis(axisY_alt);
-     chart_alt->setTitle("Altitude chart");
-//****//
-     chart_prs->legend()->hide();
-     chart_prs->addSeries(series_prs);
-     axisX_prs = new QValueAxis;
-     axisX_prs->setLabelFormat("%i");
-     axisX_prs->setMin(0);
-     axisX_prs->setMax(1);
-     axisX_prs->setTitleText("Seconds");
-     chart_prs->addAxis(axisX_prs, Qt::AlignBottom);
-     series_prs->attachAxis(axisX_prs);
+     axisY_alt = new QValueAxis; // creating a QValueAxis class for Y axis of altitude chart
+     axisY_alt->setLabelFormat("%i"); // setting a value axis label format
+     axisY_alt->setTitleText("Altitude"); // title of value axis
+     axisY_alt->setMax(1000); // maximal value of altitude
+     axisY_alt->setMin(0); // minimal value of altitude (literally ground)
+     chart_alt->addAxis(axisY_alt, Qt::AlignLeft); // connecting QLineSeries container with Y value axis
+     series_alt->attachAxis(axisY_alt);  // connecting QLineSeries container with Y value axis
 
-     axisY_prs = new QValueAxis;
-     axisY_prs->setLabelFormat("%i");
-     axisY_prs->setTitleText("Pressure");
-     axisY_prs->setMax(120000);
-     axisY_prs->setMin(95000);
-     chart_prs->addAxis(axisY_prs, Qt::AlignLeft);
-     series_prs->attachAxis(axisY_prs);
-     chart_prs->setTitle("Pressure chart");
-//****//
+     // Pressure chart setting
+     chart_prs->legend()->hide(); // hide legend
+     chart_prs->addSeries(series_prs); // connecting with QLineSeries
+     chart_prs->setTitle("Pressure chart"); // title of chart
+     // Pressure chart axis setting
+     axisX_prs = new QValueAxis; // creating a QValueAxis class for X axis of pressure chart
+     axisX_prs->setLabelFormat("%i"); // setting a value axis label format
+     axisX_prs->setTitleText("Seconds"); // title of value axis
+     axisX_prs->setMin(0); // minimal value of X axis (estimated time)
+     axisX_prs->setMax(1); // first maximal value of X axis, will be changed (check updateData() func.)
+     chart_prs->addAxis(axisX_prs, Qt::AlignBottom); // connecting X value axis with pressure chart
+     series_prs->attachAxis(axisX_prs); // connecting QLineSeries container with X value axis
+
+     axisY_prs = new QValueAxis; // creating a QValueAxis class for Y axis of pressure chart
+     axisY_prs->setLabelFormat("%i"); // setting a value axis label format
+     axisY_prs->setTitleText("Pressure"); // title of value axis
+     axisY_prs->setMax(120000); // maximal value of pressure
+     axisY_prs->setMin(95000); // minimal value of altitude
+     chart_prs->addAxis(axisY_prs, Qt::AlignLeft); // connecting QLineSeries container with X value axis
+     series_prs->attachAxis(axisY_prs); // connecting QLineSeries container with X value axis
+
+     // Next charts have absolutely same settings
+     // Outside temperature chart setting
      chart_t2->legend()->hide();
      chart_t2->addSeries(series_t2);
+     chart_t2->setTitle("Outside temperature chart");
+     // Outside temperature chart axis setting
      axisX_t2 = new QValueAxis;
      axisX_t2->setLabelFormat("%i");
      axisX_t2->setMin(0);
@@ -83,10 +94,12 @@ MainWindow::MainWindow(QWidget *parent) :
      axisY_t2->setMin(0);
      chart_t2->addAxis(axisY_t2, Qt::AlignLeft);
      series_t2->attachAxis(axisY_t2);
-     chart_t2->setTitle("Outside temperature chart");
-//****//
+
+     // Battery voltage chart setting
      chart_vbat->legend()->hide();
      chart_vbat->addSeries(series_vbat);
+     chart_vbat->setTitle("Battery voltage chart");
+     // Battery voltage chart axis setting
      axisX_vbat = new QValueAxis;
      axisX_vbat->setLabelFormat("%i");
      axisX_vbat->setTickCount(1);
@@ -101,13 +114,14 @@ MainWindow::MainWindow(QWidget *parent) :
      axisY_vbat->setMin(6);
      chart_vbat->addAxis(axisY_vbat, Qt::AlignLeft);
      series_vbat->attachAxis(axisY_vbat);
-     chart_vbat->setTitle("Battery voltage chart");
 
 
 
-     arduino = new QSerialPort(this);
-     serialBuffer = "";
-     parsed_data = "";
+
+     arduino = new QSerialPort(this); // creating a object of arduino using as radio input
+     serialBuffer = ""; // buffer for data packets
+     parsed_data = ""; // handled version of data packets
+     // Finding an Arduino UNO in all COM ports
      bool arduino_is_available = false;
      QString arduino_uno_port_name;
      foreach(const QSerialPortInfo &serialPortInfo, QSerialPortInfo::availablePorts()){
@@ -120,6 +134,7 @@ MainWindow::MainWindow(QWidget *parent) :
          }
      }
 
+     // COM port settings
      if(arduino_is_available){
          qDebug() << "Found the arduino port...\n";
          arduino->setPortName(arduino_uno_port_name);
@@ -145,6 +160,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// Reading data from serial port
 void MainWindow::readSerial()
 {
     QStringList buffer_split = serialBuffer.split("\n");
@@ -160,9 +176,10 @@ void MainWindow::readSerial()
 }
 
 
-
+// Updating data on UI
 void MainWindow::updateData(QString data)
 {
+   // Regexp expression to find all numbers in data packet
    QRegExp rx("(\\d+)");
    QStringList list;
    int pos = 0;
@@ -170,9 +187,11 @@ void MainWindow::updateData(QString data)
        list << rx.cap(1);
        pos += rx.matchedLength();
    }
+   // Unscathed data packet have 10 digits
    if (list.count() == 10)
    {
        ui->statusBar->showMessage("Пакет №" + list[1] + " получен удачно.");
+       // Updating labels in right side of UI
        ui->nvalue->setText(list[1]);
        ui->etvalue->setText(list[2]);
        ui->vbatvalue->setText(list[3]);
@@ -181,6 +200,8 @@ void MainWindow::updateData(QString data)
        ui->t1value->setText(list[7]);
        ui->t2value->setText(list[9]);
 
+       // et = estimated time
+       // Updating charts and X axis of every chart setting new maximum that is ET
        int et = list[2].toInt();
        axisX_alt->setMax(et);
        axisX_prs->setMax(et);
