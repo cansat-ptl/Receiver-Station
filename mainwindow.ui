@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>975</width>
-    <height>514</height>
+    <width>1371</width>
+    <height>762</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
+    <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="enabled">
        <bool>true</bool>
@@ -39,10 +39,10 @@
         </property>
         <property name="geometry">
          <rect>
-          <x>700</x>
+          <x>1110</x>
           <y>0</y>
           <width>231</width>
-          <height>361</height>
+          <height>351</height>
          </rect>
         </property>
         <layout class="QFormLayout" name="formLayout">
@@ -56,16 +56,6 @@
            </property>
            <property name="text">
             <string>ALT = </string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="altvalue">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string/>
            </property>
           </widget>
          </item>
@@ -156,6 +146,16 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_11">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>TEMP2 =</string>
+           </property>
+          </widget>
          </item>
          <item row="6" column="1">
           <widget class="QLabel" name="t2value">
@@ -275,13 +275,13 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_11">
+         <item row="0" column="1">
+          <widget class="QLabel" name="altvalue">
            <property name="enabled">
             <bool>true</bool>
            </property>
            <property name="text">
-            <string>TEMP2 =</string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -290,8 +290,8 @@
        <widget class="QWidget" name="verticalLayoutWidget">
         <property name="geometry">
          <rect>
-          <x>700</x>
-          <y>360</y>
+          <x>1110</x>
+          <y>350</y>
           <width>231</width>
           <height>61</height>
          </rect>
@@ -311,18 +311,18 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>351</width>
-          <height>211</height>
+          <width>551</width>
+          <height>331</height>
          </rect>
         </property>
        </widget>
        <widget class="QChartView" name="prschart" native="true">
         <property name="geometry">
          <rect>
-          <x>349</x>
+          <x>560</x>
           <y>0</y>
-          <width>351</width>
-          <height>211</height>
+          <width>551</width>
+          <height>331</height>
          </rect>
         </property>
        </widget>
@@ -330,19 +330,19 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>219</y>
-          <width>351</width>
-          <height>211</height>
+          <y>340</y>
+          <width>551</width>
+          <height>331</height>
          </rect>
         </property>
        </widget>
        <widget class="QChartView" name="vbatchart" native="true">
         <property name="geometry">
          <rect>
-          <x>349</x>
-          <y>219</y>
-          <width>351</width>
-          <height>211</height>
+          <x>560</x>
+          <y>340</y>
+          <width>551</width>
+          <height>331</height>
          </rect>
         </property>
        </widget>
@@ -369,7 +369,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>975</width>
+     <width>1371</width>
      <height>21</height>
     </rect>
    </property>

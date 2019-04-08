@@ -36,6 +36,18 @@ private:
     QChart *chart_prs;
     QChart *chart_t2;
     QChart *chart_vbat;
+    QValueAxis *axisX_alt;
+    QValueAxis *axisY_alt;
+    QValueAxis *axisX_prs;
+    QValueAxis *axisY_prs;
+    QValueAxis *axisX_t2;
+    QValueAxis *axisY_t2;
+    QValueAxis *axisX_vbat;
+    QValueAxis *axisY_vbat;
+    QLineSeries *series_alt;
+    QLineSeries *series_prs;
+    QLineSeries *series_t2;
+    QLineSeries *series_vbat;
 };
 
 #endif // MAINWINDOW_H
