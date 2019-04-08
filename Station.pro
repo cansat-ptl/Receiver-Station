@@ -1,7 +1,7 @@
 #-------------------------------------------------
-#
-# Project created Anatoly Antonov for MSU CanSat championship 2019
-#
+# Handler of CanSat data packets
+# Created Anatoly Antonov ( https://github.com/champi2061 ) for 8-th Russian Championship of project "Air and Engineering School"
+# 2019
 #-------------------------------------------------
 
 QT       += core gui serialport charts
