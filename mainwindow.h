@@ -6,6 +6,8 @@
 #include <QByteArray>
 #include <QtCharts>
 
+
+
 namespace Ui {
 class MainWindow;
 }
@@ -18,6 +20,8 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+
+
 private slots:
     void readSerial();
     void updateData(QString);
@@ -26,12 +30,12 @@ private slots:
 
     void on_pngbutton2_clicked();
 
-private:
-    Ui::MainWindow *ui;
 
+private:
+    int arduino_uno_vendor_id = 9025;
+    int arduino_uno_product_id = 67;
+    Ui::MainWindow *ui;
     QSerialPort *arduino;
-    static const quint16 arduino_uno_vendor_id = 9025;
-    static const quint16 arduino_uno_product_id = 67;
     QByteArray serialData;
     QString serialBuffer;
     QString parsed_data;
@@ -43,6 +47,7 @@ private:
     QChart *chart_ax;
     QChart *chart_ay;
     QChart *chart_az;
+   // QChart *chart_xyz;
     QValueAxis *axisX_alt;
     QValueAxis *axisY_alt;
     QValueAxis *axisX_prs;
@@ -57,6 +62,8 @@ private:
     QValueAxis *axisY_ay;
     QValueAxis *axisX_az;
     QValueAxis *axisY_az;
+  //  QValueAxis *axisX_xyz;
+  // QValueAxis *axisY_xyz;
     QLineSeries *series_alt;
     QLineSeries *series_prs;
     QLineSeries *series_t2;
@@ -66,6 +73,24 @@ private:
     QLineSeries *series_az;
     int pngCounter = 0;
     int pngCounter2 = 0;
+    int altMax = 0;
+    int prsMax = 0;
+    int t2Max = 0;
+    int vbatMax = 6;
+    int altMin = 100000;
+    int prsMin = 120000;
+    int t2Min = 100;
+    int vbatMin = 9;
+    double axMax = -20.0;
+    double axMin = 20.0;
+    double ayMax = -20.0;
+    double ayMin = 20.0;
+    double azMax = -20.0;
+    double azMin = 20.0;
+    int etMin1 = 0;
+    int etMin2 = 0;
+    //double xyzMax = -20.0;
+    //double xyzMin = 20.0;
 };
 
 #endif // MAINWINDOW_H

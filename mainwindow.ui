@@ -27,7 +27,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="main">
        <attribute name="title">
@@ -364,7 +364,7 @@
           <x>0</x>
           <y>0</y>
           <width>1111</width>
-          <height>171</height>
+          <height>221</height>
          </rect>
         </property>
        </widget>
@@ -372,9 +372,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>170</y>
+          <y>220</y>
           <width>1111</width>
-          <height>171</height>
+          <height>221</height>
          </rect>
         </property>
        </widget>
@@ -382,9 +382,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>340</y>
+          <y>440</y>
           <width>1111</width>
-          <height>171</height>
+          <height>221</height>
          </rect>
         </property>
        </widget>
@@ -556,6 +556,16 @@
        <attribute name="title">
         <string>GPS</string>
        </attribute>
+       <widget class="QChartView" name="xyzchart" native="true">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>20</y>
+          <width>1061</width>
+          <height>641</height>
+         </rect>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>

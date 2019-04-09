@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QtCharts>
 
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -21,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
      chart_ax = new QChart;
      chart_ay = new QChart;
      chart_az = new QChart;
+     //chart_xyz = new QChart;
 
      // Creating QLineSeries containers for charts
      series_alt = new QLineSeries;
@@ -39,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
      ui->axchart->setChart(chart_ax);
      ui->aychart->setChart(chart_ay);
      ui->azchart->setChart(chart_az);
+    // ui->xyzchart->setChart(chart_xyz);
 
      // Altitude chart setting
      chart_alt->legend()->hide(); // hide legend
@@ -55,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
      axisY_alt = new QValueAxis; // creating a QValueAxis class for Y axis of altitude chart
      axisY_alt->setLabelFormat("%i"); // setting a value axis label format
-     axisY_alt->setTitleText("Altitude"); // title of value axis
+     axisY_alt->setTitleText("Meters"); // title of value axis
      axisY_alt->setMax(1000); // maximal value of altitude
      axisY_alt->setMin(0); // minimal value of altitude (literally ground)
      chart_alt->addAxis(axisY_alt, Qt::AlignLeft); // connecting QLineSeries container with Y value axis
@@ -77,8 +81,6 @@ MainWindow::MainWindow(QWidget *parent) :
      axisY_prs = new QValueAxis; // creating a QValueAxis class for Y axis of pressure chart
      axisY_prs->setLabelFormat("%i"); // setting a value axis label format
      axisY_prs->setTitleText("Pascals"); // title of value axis
-     axisY_prs->setMax(120000); // maximal value of pressure
-     axisY_prs->setMin(95000); // minimal value of altitude
      chart_prs->addAxis(axisY_prs, Qt::AlignLeft); // connecting QLineSeries container with X value axis
      series_prs->attachAxis(axisY_prs); // connecting QLineSeries container with X value axis
 
@@ -99,8 +101,6 @@ MainWindow::MainWindow(QWidget *parent) :
      axisY_t2 = new QValueAxis;
      axisY_t2->setLabelFormat("%i");
      axisY_t2->setTitleText("Celcium");
-     axisY_t2->setMax(50);
-     axisY_t2->setMin(0);
      chart_t2->addAxis(axisY_t2, Qt::AlignLeft);
      series_t2->attachAxis(axisY_t2);
 
@@ -119,8 +119,6 @@ MainWindow::MainWindow(QWidget *parent) :
      axisY_vbat = new QValueAxis;
      axisY_vbat->setLabelFormat("%f");
      axisY_vbat->setTitleText("Volts");
-     axisY_vbat->setMax(9);
-     axisY_vbat->setMin(6);
      chart_vbat->addAxis(axisY_vbat, Qt::AlignLeft);
      series_vbat->attachAxis(axisY_vbat);
 
@@ -137,10 +135,8 @@ MainWindow::MainWindow(QWidget *parent) :
      series_ax->attachAxis(axisX_ax);
 
      axisY_ax = new QValueAxis;
-     axisY_ax->setLabelFormat("%i");
-     axisY_ax->setTitleText("m/s");
-     axisY_ax->setMax(100);
-     axisY_ax->setMin(0);
+     axisY_ax->setLabelFormat("%f");
+     axisY_ax->setTitleText("g");
      chart_ax->addAxis(axisY_ax, Qt::AlignLeft);
      series_ax->attachAxis(axisY_ax);
 
@@ -157,10 +153,10 @@ MainWindow::MainWindow(QWidget *parent) :
      series_ay->attachAxis(axisX_ay);
 
      axisY_ay = new QValueAxis;
-     axisY_ay->setLabelFormat("%i");
-     axisY_ay->setTitleText("m/s");
-     axisY_ay->setMax(100);
-     axisY_ay->setMin(0);
+     axisY_ay->setLabelFormat("%f");
+     axisY_ay->setTitleText("g");
+     axisY_ay->setMax(16);
+     axisY_ay->setMin(-16);
      chart_ay->addAxis(axisY_ay, Qt::AlignLeft);
      series_ay->attachAxis(axisY_ay);
 
@@ -177,13 +173,42 @@ MainWindow::MainWindow(QWidget *parent) :
      series_az->attachAxis(axisX_az);
 
      axisY_az = new QValueAxis;
-     axisY_az->setLabelFormat("%i");
-     axisY_az->setTitleText("m/s");
-     axisY_az->setMax(100);
-     axisY_az->setMin(0);
+     axisY_az->setLabelFormat("%f");
+     axisY_az->setTitleText("g");
+     axisY_az->setMax(16);
+     axisY_az->setMin(-16);
      chart_az->addAxis(axisY_az, Qt::AlignLeft);
      series_az->attachAxis(axisY_az);
 
+   /*  // XYZ chart setting
+     chart_xyz->legend()->show();
+     chart_xyz->addSeries(series_ax);
+     chart_xyz->addSeries(series_ay);
+     chart_xyz->addSeries(series_az);
+     chart_xyz->setTitle("Acceleration by X,Y,Z chart");
+     // XYZ chart value axes setting
+     axisX_xyz = new QValueAxis;
+     axisX_xyz->setLabelFormat("%i");
+     axisX_xyz->setTickCount(1);
+     axisX_xyz->setTitleText("Seconds");
+     chart_xyz->addAxis(axisX_xyz, Qt::AlignBottom);
+     series_ax->attachAxis(axisX_xyz);
+     series_ay->attachAxis(axisX_xyz);
+     series_az->attachAxis(axisX_xyz);
+
+     axisY_xyz = new QValueAxis;
+     axisY_xyz->setLabelFormat("%f");
+     axisY_xyz->setTitleText("g");
+     axisY_xyz->setMax(16);
+     axisY_xyz->setMin(-16);
+     chart_xyz->addAxis(axisY_xyz, Qt::AlignLeft);
+     series_ax->attachAxis(axisY_xyz);
+     series_ay->attachAxis(axisY_xyz);
+     series_az->attachAxis(axisY_xyz);*/
+     QString v = QInputDialog::getText(this, "Input dialog", "Vendor ID:", QLineEdit::Normal);
+     QString p = QInputDialog::getText(this, "Input dialog", "Product ID:", QLineEdit::Normal);
+     arduino_uno_vendor_id = v.toInt();
+     arduino_uno_product_id = p.toInt();
      arduino = new QSerialPort(this); // creating a object of arduino using as radio input
      serialBuffer = ""; // buffer for data packets
      parsed_data = ""; // handled version of data packets
@@ -220,9 +245,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    if(arduino->isOpen()){
-        arduino->close(); //    Close the serial port if it's open.
-    }
+    arduino->close();
     delete ui;
 }
 
@@ -268,26 +291,65 @@ void MainWindow::updateData(QString data)
 
        // et = estimated time
        // Updating charts and X axis of every chart setting new maximum that is ET
+
        int et = list[2].toInt();
+       if (et > etMin1)
+       {
+           etMin1 = INT_MAX;
+           axisX_alt->setMin(et);
+           axisX_prs->setMin(et);
+           axisX_t2->setMin(et);
+           axisX_vbat->setMin(et);
+           axisX_alt->setMax(et+1);
+           axisX_prs->setMax(et+1);
+           axisX_t2->setMax(et+1);
+           axisX_vbat->setMax(et+1);
+       }
+       else
+       {
        axisX_alt->setMax(et);
        axisX_prs->setMax(et);
        axisX_t2->setMax(et);
        axisX_vbat->setMax(et);
-
+       }
+       if (list[4].toInt() > altMax)
+           altMax = list[4].toInt();
+       if (list[4].toInt() < altMin)
+           altMin = list[4].toInt();
+       axisY_alt->setMax(altMax);
+       axisY_alt->setMin(altMin);
        chart_alt->removeSeries(series_alt);
        series_alt->append(et,list[4].toInt());
        chart_alt->addSeries(series_alt);
 
+       if (list[5].toInt() > prsMax)
+           prsMax = list[4].toInt();
+       if (list[5].toInt() < prsMin)
+           prsMin = list[4].toInt();
+       axisY_prs->setMax(prsMax);
+       axisY_prs->setMin(prsMin);
        chart_prs->removeSeries(series_prs);
        series_prs->append(et,list[5].toInt());
        chart_prs->addSeries(series_prs);
 
+       if (list[9].toInt() > t2Max)
+           t2Max = list[4].toInt();
+       if (list[9].toInt() < t2Min)
+           t2Min = list[4].toInt();
+       axisY_t2->setMax(t2Max);
+       axisY_t2->setMin(t2Min);
        chart_t2->removeSeries(series_t2);
        series_t2->append(et,list[9].toInt());
        chart_t2->addSeries(series_t2);
 
+       if (list[3].toInt() > vbatMax)
+           vbatMax = list[3].toInt();
+       if (list[3].toInt() < vbatMin)
+           vbatMin = list[3].toInt();
+       axisY_vbat->setMax(vbatMax);
+       axisY_vbat->setMin(vbatMin);
        chart_vbat->removeSeries(series_vbat);
-       series_vbat->append(et,(list[3].toDouble()/10.0));
+       series_vbat->append(et,((list[3].toDouble() - 160)/10.0));
        chart_vbat->addSeries(series_vbat);
 
    }
@@ -301,28 +363,79 @@ void MainWindow::updateData(QString data)
        ui->orient_ayvalue->setText(list[4]);
        ui->orient_azvalue->setText(list[5]);
        int et = list[2].toInt();
-
+       if (et > etMin2)
+       {
+           etMin2 = INT_MAX;
+           axisX_ax->setMin(et);
+           axisX_ay->setMin(et);
+           axisX_az->setMin(et);
+       }
        axisX_ax->setMax(et);
        axisX_ay->setMax(et);
        axisX_az->setMax(et);
+      // axisX_xyz->setMax(et);
+       double axValue = (list[3].toDouble() - 160) / 10.0;
+       double ayValue = (list[4].toDouble() - 160)/ 10.0;
+       double azValue = (list[5].toDouble() - 160)/ 10.0;
 
+       if (axValue > axMax)
+           axMax = axValue;
+       if (axValue< axMin)
+           axMin = axValue;
+       axisY_ax->setMax(axMax);
+       axisY_ax->setMin(axMin);
        chart_ax->removeSeries(series_ax);
-       series_ax->append(et,list[3].toInt());
+     // chart_xyz->removeSeries(series_ax);
+       series_ax->append(et,axValue);
+     //  chart_xyz->addSeries(series_ax);
        chart_ax->addSeries(series_ax);
 
+       if (ayValue > ayMax)
+           ayMax = ayValue;
+       if (ayValue < ayMin)
+           ayMin = ayValue;
+       axisY_ay->setMax(ayMax);
+       axisY_ay->setMin(ayMin);
        chart_ay->removeSeries(series_ay);
-       series_ay->append(et,list[4].toInt());
+     //  chart_xyz->removeSeries(series_ay);
+       series_ay->append(et,ayValue);
+     //  chart_xyz->addSeries(series_ay);
        chart_ay->addSeries(series_ay);
 
+       if (azValue > azMax)
+           azMax = azValue;
+       if (azValue < azMin)
+           azMin = azValue;
+       axisY_az->setMax(azMax);
+       axisY_az->setMin(azMin);
        chart_az->removeSeries(series_az);
-       series_az->append(et,list[5].toInt());
+     //  chart_xyz->removeSeries(series_az);
+       series_az->append(et,azValue);
+     //  chart_xyz->addSeries(series_az);
        chart_az->addSeries(series_az);
+
+      /* if (axValue > xyzMax)
+           xyzMax = axValue;
+       else if (ayValue > xyzMax)
+           xyzMax = ayValue;
+       else if (azValue > xyzMax)
+           xyzMax = azValue;
+       if (axValue < xyzMin)
+           xyzMin = axValue;
+       else if (ayValue < xyzMin)
+           xyzMin = ayValue;
+       else if (azValue < xyzMin)
+           xyzMin = azValue;
+
+       axisY_xyz->setMax(xyzMax);
+       axisY_xyz->setMax(xyzMin);*/
+
    }
    else
    {
        ui->statusBar->showMessage("Пакет поврежден. Ожидание следующего пакета.");
    }
-   qDebug() << data;
+  // qDebug() << data;
 }
 
 
