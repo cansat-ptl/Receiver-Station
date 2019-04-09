@@ -4,7 +4,7 @@
 # 2019
 #-------------------------------------------------
 
-QT       += core gui serialport charts
+QT       += core gui serialport charts opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
