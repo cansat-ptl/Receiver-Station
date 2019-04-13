@@ -86,6 +86,9 @@ private:
     double azMin = 20.0;
     int etMin1 = 0;
     int etMin2 = 0;
+
+    bool mainCreated = false;
+    bool orientCreated = false;
 };
 
 #endif // MAINWINDOW_H

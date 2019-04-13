@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QtCharts>
 
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -243,6 +245,11 @@ void MainWindow::readSerial()
     {
         serialBuffer = "";
         parsed_data = buffer_split[0];
+        QFile dataPackets(".\\CSVs\\data_packets.csv");
+        dataPackets.open(QFile::WriteOnly|QFile::Append);
+        QTextStream packetStream(&dataPackets);
+        packetStream << parsed_data << "\n";
+        dataPackets.close();
         MainWindow::updateData(parsed_data);
     }
 }
@@ -252,7 +259,6 @@ void MainWindow::readSerial()
 void MainWindow::updateData(QString s)
 {
         int l = s.length();
-        bool damaged = false;
         QString temp = "";
         QString type = "";
         for (int j = 0; j < l; j++)
@@ -274,7 +280,9 @@ void MainWindow::updateData(QString s)
             }
         if (type == "MAIN")
         {
-        int n = 0, et = 0, vbat = 0, alt = 0, prs = 0, t1 = 0, t2 = 0, i = 0;;
+        int n = 0, et = 0, vbat = 0, alt = 0, prs = 0, t1 = 0, t2 = 0, i = 0;
+        bool damaged[7] = {false};
+
         for (i = 0; i < l; i++)
         {
             if (s[i] == '=')
@@ -287,7 +295,7 @@ void MainWindow::updateData(QString s)
                         i++;
                         if (i > l)
                         {
-                            damaged = true;
+                            damaged[0] = true;
                             break;
                         }
                         }
@@ -307,7 +315,7 @@ void MainWindow::updateData(QString s)
                             i++;
                             if (i > l)
                             {
-                            damaged = true;
+                            damaged[1] = true;
                             break;
                             }
                             }
@@ -332,7 +340,7 @@ void MainWindow::updateData(QString s)
                                     i++;
                                     if (i > l)
                                     {
-                                    damaged = true;
+                                    damaged[2] = true;
                                     break;
                                     }
                                     }
@@ -357,7 +365,7 @@ void MainWindow::updateData(QString s)
                                 i++;
                                 if (i > l)
                                 {
-                                damaged = true;
+                                damaged[3] = true;
                                 break;
                                 }
                                 }
@@ -381,7 +389,7 @@ void MainWindow::updateData(QString s)
                                 i++;
                                 if (i > l)
                                 {
-                                damaged = true;
+                                damaged[4] = true;
                                 break;
                                 }
                                 }
@@ -403,7 +411,7 @@ void MainWindow::updateData(QString s)
                                 i++;
                                 if (i > l)
                                 {
-                                damaged = true;
+                                damaged[5] = true;
                                 break;
                                 }
                                 }
@@ -424,7 +432,7 @@ void MainWindow::updateData(QString s)
                                 i++;
                                 if (i > l)
                                 {
-                                damaged = true;
+                                damaged[6] = true;
                                 break;
                                 }
                                 }
@@ -434,85 +442,152 @@ void MainWindow::updateData(QString s)
                 }
             }
         }
-       if (!damaged)
+
+       if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5] && !damaged[6])
         ui -> statusBar -> showMessage("Главный пакет №" + QString::number(n) + " получен удачно.");
        else
         ui -> statusBar -> showMessage("Последний пакет принят с повреждениями, данные могут быть неточны");
+       QFile dataMain(".\\CSVs\\data_main.csv");
+       dataMain.open(QFile::WriteOnly|QFile::Append);
+       QTextStream mainStream(&dataMain);
+
        // Updating labels in right side of UI
-       ui -> nvalue -> setText(QString::number(n));
-       ui -> etvalue -> setText(QString::number(et));
-       ui -> vbatvalue -> setText(QString::number(vbat));
-       ui -> altvalue -> setText(QString::number(alt));
-       ui -> prsvalue -> setText(QString::number(prs));
-       ui -> t1value -> setText(QString::number(t1));
-       ui -> t2value -> setText(QString::number(t2));
+       if (!damaged[0])
+           {
+           ui -> nvalue -> setText(QString::number(n));
+           mainStream << n << "\t";
+           }
+       if (!damaged[1])
+           {
+           ui -> etvalue -> setText(QString::number(et));
+           mainStream << et << "\t";
+           }
+       if (!damaged[2])
+           {
+           ui -> vbatvalue -> setText(QString::number(vbat));
+           mainStream << vbat << "\t";
+           }
+       if (!damaged[3])
+           {
+           ui -> altvalue -> setText(QString::number(alt));
+           mainStream << alt << "\t";
+           }
+       if (!damaged[4])
+           {
+           ui -> prsvalue -> setText(QString::number(prs));
+           mainStream << prs << "\t";
+           }
+       if (!damaged[5])
+           {
+           ui -> t1value -> setText(QString::number(t1));
+           mainStream << t1 << "\t";
+           }
+       if (!damaged[6])
+           {
+           ui -> t2value -> setText(QString::number(t2));
+           mainStream << t2 << "\n";
+           }
+       dataMain.close();
 
        // et = estimated time
        // Updating charts and X axis of every chart setting new maximum that is ET
-
-       if (et > etMin1)
+       if (!damaged[1])
        {
-           etMin1 = INT_MAX;
-           axisX_alt -> setMin(et);
-           axisX_prs -> setMin(et);
-           axisX_t2 -> setMin(et);
-           axisX_vbat -> setMin(et);
-           axisX_alt -> setMax(et+1);
-           axisX_prs -> setMax(et+1);
-           axisX_t2 -> setMax(et+1);
-           axisX_vbat -> setMax(et+1);
+           if (et > etMin1)
+           {
+               etMin1 = INT_MAX;
+               axisX_alt -> setMin(et);
+               axisX_prs -> setMin(et);
+               axisX_t2 -> setMin(et);
+               axisX_vbat -> setMin(et);
+               axisX_alt -> setMax(et + 1);
+               axisX_prs -> setMax(et + 1);
+               axisX_t2 -> setMax(et + 1);
+               axisX_vbat -> setMax(et + 1);
+           }
+           else
+           {
+               axisX_alt -> setMax(et);
+               axisX_prs -> setMax(et);
+               axisX_t2 -> setMax(et);
+               axisX_vbat -> setMax(et);
+           }
        }
-       else
+
+       if (!damaged[3])
        {
-       axisX_alt -> setMax(et);
-       axisX_prs -> setMax(et);
-       axisX_t2 -> setMax(et);
-       axisX_vbat -> setMax(et);
+           if (alt > altMax)
+           {
+               altMax = alt;
+               axisY_alt -> setMax(altMax);
+           }
+           if (alt < altMin)
+           {
+               altMin = alt;
+               axisY_alt -> setMin(altMin);
+           }
+           chart_alt -> removeSeries(series_alt);
+           series_alt -> append(et , alt);
+           chart_alt -> addSeries(series_alt);
        }
-       if (alt > altMax)
-           altMax = alt;
-       if (alt < altMin)
-           altMin = alt;
-       axisY_alt -> setMax(altMax);
-       axisY_alt -> setMin(altMin);
-       chart_alt -> removeSeries(series_alt);
-       series_alt -> append(et , alt);
-       chart_alt -> addSeries(series_alt);
 
-       if (prs > prsMax)
-           prsMax = prs;
-       if (prs < prsMin)
-           prsMin = prs;
-       axisY_prs -> setMax(prsMax);
-       axisY_prs -> setMin(prsMin);
-       chart_prs -> removeSeries(series_prs);
-       series_prs -> append(et , prs);
-       chart_prs -> addSeries(series_prs);
+       if (!damaged[4])
+       {
+           if (prs > prsMax)
+           {
+               prsMax = prs;
+               axisY_prs -> setMax(prsMax);
+           }
+           if (prs < prsMin)
+           {
+               prsMin = prs;
+               axisY_prs -> setMin(prsMin);
+           }
+           chart_prs -> removeSeries(series_prs);
+           series_prs -> append(et , prs);
+           chart_prs -> addSeries(series_prs);
+       }
 
-       if (t2 > t2Max)
-           t2Max = t2;
-       if (t2 < t2Min)
-           t2Min = t2;
-       axisY_t2 -> setMax(t2Max);
-       axisY_t2 -> setMin(t2Min);
-       chart_t2 -> removeSeries(series_t2);
-       series_t2 -> append(et , t2);
-       chart_t2 -> addSeries(series_t2);
+       if (!damaged[6])
+       {
+           if (t2 > t2Max)
+           {
+               t2Max = t2;
+               axisY_t2 -> setMax(t2Max);
+           }
+           if (t2 < t2Min)
+           {
+               t2Min = t2;
+               axisY_t2 -> setMin(t2Min);
+           }
+           chart_t2 -> removeSeries(series_t2);
+           series_t2 -> append(et , t2);
+           chart_t2 -> addSeries(series_t2);
+       }
 
-       if (vbat > vbatMax)
-           vbatMax = vbat;
-       if (vbat < vbatMin)
-           vbatMin = vbat;
-       axisY_vbat -> setMax(vbatMax);
-       axisY_vbat -> setMin(vbatMin);
-       chart_vbat -> removeSeries(series_vbat);
-       series_vbat -> append(et , (double)vbat / 10.0);
-       chart_vbat -> addSeries(series_vbat);
+       if (!damaged[2])
+       {
+           if (vbat > vbatMax)
+           {
+               vbatMax = vbat;
+               axisY_vbat -> setMax(vbatMax);
+           }
+           if (vbat < vbatMin)
+           {
+               vbatMin = vbat;
+               axisY_vbat -> setMin(vbatMin);
+           }
+           chart_vbat -> removeSeries(series_vbat);
+           series_vbat -> append(et , double(vbat) / 10.0);
+           chart_vbat -> addSeries(series_vbat);
+       }
        }
 
        if (type == "ORIENT")
        {
        int n = 0, et = 0, rawAx = 0, rawAy = 0, rawAz = 0, i = 0;
+       bool damaged[5] = {false};
+
        for (i = 0; i < l; i++)
            {
                if (s[i] == '=')
@@ -525,7 +600,7 @@ void MainWindow::updateData(QString s)
                            i++;
                            if (i > l)
                            {
-                               damaged = true;
+                               damaged[0] = true;
                                break;
                            }
                            }
@@ -545,7 +620,7 @@ void MainWindow::updateData(QString s)
                                i++;
                                if (i > l)
                                {
-                               damaged = true;
+                               damaged[1] = true;
                                break;
                                }
                                }
@@ -566,7 +641,7 @@ void MainWindow::updateData(QString s)
                                    i++;
                                    if (i > l)
                                    {
-                                   damaged = true;
+                                   damaged[2] = true;
                                    break;
                                    }
                                    }
@@ -587,7 +662,7 @@ void MainWindow::updateData(QString s)
                                    i++;
                                    if (i > l)
                                    {
-                                   damaged = true;
+                                   damaged[3] = true;
                                    break;
                                    }
                                    }
@@ -608,7 +683,7 @@ void MainWindow::updateData(QString s)
                                    i++;
                                    if (i > l)
                                    {
-                                   damaged = true;
+                                   damaged[4] = true;
                                    break;
                                    }
                                    }
@@ -618,56 +693,115 @@ void MainWindow::updateData(QString s)
                    }
                }
            }
-       double ax = (double)rawAx / 10.0, ay = (double)rawAy / 10.0, az = (double)rawAz / 10.0;
-       if (!damaged)
-        ui -> statusBar -> showMessage("Пакет ориентации №" + QString::number(n) + " получен удачно");
+
+       double ax = double(rawAx) / 10.0, ay = double(rawAy) / 10.0, az = double(rawAz) / 10.0;
+
+       if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4])
+           ui -> statusBar -> showMessage("Пакет ориентации №" + QString::number(n) + " получен удачно");
        else
-        ui -> statusBar -> showMessage("Последний пакет принят с повреждениями, данные могут быть неточны");
+           ui -> statusBar -> showMessage("Последний пакет принят с повреждениями, данные могут быть неточны");
 
-       ui -> orient_nvalue -> setText(QString::number(n));
-       ui -> orient_etvalue -> setText(QString::number(et));
-       ui -> orient_axvalue -> setText(QString::number(ax));
-       ui -> orient_ayvalue -> setText(QString::number(ay));
-       ui -> orient_azvalue -> setText(QString::number(az));
-       if (et > etMin2)
+       QFile dataOrient(".\\CSVs\\data_orient.csv");
+       dataOrient.open(QFile::WriteOnly|QFile::Append);
+       QTextStream orientStream(&dataOrient);
+
+       if (!damaged[0])
        {
-           etMin2 = INT_MAX;
-           axisX_ax -> setMin(et);
-           axisX_ay -> setMin(et);
-           axisX_az -> setMin(et);
+           ui -> orient_nvalue -> setText(QString::number(n));
+           orientStream << n << "\t";
        }
-       axisX_ax -> setMax(et);
-       axisX_ay -> setMax(et);
-       axisX_az -> setMax(et);
-       if (ax > axMax)
-           axMax = ax;
-       if (ax< axMin)
-           axMin = ax;
-       axisY_ax -> setMax(axMax);
-       axisY_ax -> setMin(axMin);
-       chart_ax -> removeSeries(series_ax);
-       series_ax -> append(et , ax);
-       chart_ax -> addSeries(series_ax);
+       if (!damaged[1])
+       {
+           ui -> orient_etvalue -> setText(QString::number(et));
+           orientStream << et << "\t";
+       }
+       if (!damaged[2])
+       {
+           ui -> orient_axvalue -> setText(QString::number(ax));
+           orientStream << ax << "\t";
+       }
+       if (!damaged[3])
+       {
+           ui -> orient_ayvalue -> setText(QString::number(ay));
+           orientStream << ay << "\t";
+       }
+       if (!damaged[4])
+       {
+           ui -> orient_azvalue -> setText(QString::number(az));
+           orientStream << az << "\n";
+       }
+       dataOrient.close();
 
-       if (ay > ayMax)
-           ayMax = ay;
-       if (ay < ayMin)
-           ayMin = ay;
-       axisY_ay -> setMax(ayMax);
-       axisY_ay -> setMin(ayMin);
-       chart_ay -> removeSeries(series_ay);
-       series_ay -> append(et , ay);
-       chart_ay -> addSeries(series_ay);
+       if (!damaged[1])
+       {
+           if (et > etMin2)
+           {
+               etMin2 = INT_MAX;
+               axisX_ax -> setMin(et);
+               axisX_ay -> setMin(et);
+               axisX_az -> setMin(et);
+               axisX_ax -> setMax(et + 1);
+               axisX_ay -> setMax(et + 1);
+               axisX_az -> setMax(et + 1);
+           }
+           else
+           {
+               axisX_ax -> setMax(et);
+               axisX_ay -> setMax(et);
+               axisX_az -> setMax(et);
+           }
+       }
 
-       if (az > azMax)
-           azMax = az;
-       if (az < azMin)
-           azMin = az;
-       axisY_az -> setMax(azMax);
-       axisY_az -> setMin(azMin);
-       chart_az -> removeSeries(series_az);
-       series_az -> append(et , az);
-       chart_az -> addSeries(series_az);
+       if (!damaged[2])
+       {
+           if (ax > axMax)
+               {
+               axMax = ax;
+               axisY_ax -> setMax(axMax);
+               }
+           if (ax< axMin)
+           {
+               axMin = ax;
+               axisY_ax -> setMin(axMin);
+           }
+           chart_ax -> removeSeries(series_ax);
+           series_ax -> append(et , ax);
+           chart_ax -> addSeries(series_ax);
+       }
+
+       if (!damaged[3])
+       {
+           if (ay > ayMax)
+               {
+               ayMax = ay;
+               axisY_ay -> setMax(ayMax);
+               }
+           if (ay < ayMin)
+               {
+               ayMin = ay;
+               axisY_ay -> setMin(ayMin);
+               }
+           chart_ay -> removeSeries(series_ay);
+           series_ay -> append(et , ay);
+           chart_ay -> addSeries(series_ay);
+       }
+
+       if (!damaged[4])
+       {
+           if (az > azMax)
+               {
+               azMax = az;
+               axisY_az -> setMax(azMax);
+               }
+           if (az < azMin)
+               {
+               azMin = az;
+               axisY_az -> setMin(azMin);
+               }
+           chart_az -> removeSeries(series_az);
+           series_az -> append(et , az);
+           chart_az -> addSeries(series_az);
+       }
        }
 }
 
