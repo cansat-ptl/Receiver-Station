@@ -5,12 +5,30 @@
 #include <QSerialPort>
 #include <QByteArray>
 #include <QtCharts>
+#include <QtCharts/QChartView>
+#include <QtWidgets/QRubberBand>
 
 
 
 namespace Ui {
 class MainWindow;
 }
+
+class ChartView : public QChartView
+{
+public:
+    ChartView(QChart *chart, QWidget *parent = 0);
+
+protected:
+    bool viewportEvent(QEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
+
+private:
+    bool m_isTouching;
+};
 
 class MainWindow : public QMainWindow
 {
@@ -44,6 +62,15 @@ private:
     QChart *chart_ay;
     QChart *chart_az;
 
+    ChartView *chartview_alt;
+    ChartView *chartview_prs;
+    ChartView *chartview_vbat;
+    ChartView *chartview_t2;
+    ChartView *chartview_ax;
+    ChartView *chartview_ay;
+    ChartView *chartview_az;
+
+
     QValueAxis *axisX_alt;
     QValueAxis *axisY_alt;
     QValueAxis *axisX_prs;
@@ -73,11 +100,11 @@ private:
     int altMax = 0;
     int prsMax = 0;
     int t2Max = 0;
-    int vbatMax = 6;
+    double vbatMax = 6;
     int altMin = 100000;
     int prsMin = 120000;
     int t2Min = 100;
-    int vbatMin = 9;
+    double vbatMin = 9;
     double axMax = -20.0;
     double axMin = 20.0;
     double ayMax = -20.0;
@@ -90,5 +117,7 @@ private:
     bool mainCreated = false;
     bool orientCreated = false;
 };
+
+
 
 #endif // MAINWINDOW_H

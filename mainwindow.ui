@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1371</width>
-    <height>762</height>
+    <width>1370</width>
+    <height>786</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -293,17 +293,10 @@
           <x>1110</x>
           <y>350</y>
           <width>231</width>
-          <height>91</height>
+          <height>31</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="QPushButton" name="csvbutton">
-           <property name="text">
-            <string>Save to CSV</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <widget class="QPushButton" name="pngbutton1">
            <property name="text">
@@ -313,44 +306,28 @@
          </item>
         </layout>
        </widget>
-       <widget class="QChartView" name="altchart" native="true">
+       <widget class="QWidget" name="verticalLayoutWidget_4">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
           <width>1111</width>
-          <height>171</height>
+          <height>671</height>
          </rect>
         </property>
+        <layout class="QVBoxLayout" name="mainLayout"/>
        </widget>
-       <widget class="QChartView" name="prschart" native="true">
+       <widget class="QLabel" name="mainlabel">
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>170</y>
+          <y>670</y>
           <width>1111</width>
-          <height>171</height>
+          <height>21</height>
          </rect>
         </property>
-       </widget>
-       <widget class="QChartView" name="t2chart" native="true">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>340</y>
-          <width>1111</width>
-          <height>171</height>
-         </rect>
-        </property>
-       </widget>
-       <widget class="QChartView" name="vbatchart" native="true">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>510</y>
-          <width>1111</width>
-          <height>171</height>
-         </rect>
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </widget>
@@ -358,43 +335,13 @@
        <attribute name="title">
         <string>ORIENT</string>
        </attribute>
-       <widget class="QChartView" name="axchart" native="true">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>1111</width>
-          <height>221</height>
-         </rect>
-        </property>
-       </widget>
-       <widget class="QChartView" name="aychart" native="true">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>220</y>
-          <width>1111</width>
-          <height>221</height>
-         </rect>
-        </property>
-       </widget>
-       <widget class="QChartView" name="azchart" native="true">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>440</y>
-          <width>1111</width>
-          <height>221</height>
-         </rect>
-        </property>
-       </widget>
        <widget class="QWidget" name="formLayoutWidget_2">
         <property name="geometry">
          <rect>
-          <x>1120</x>
+          <x>1110</x>
           <y>0</y>
           <width>231</width>
-          <height>351</height>
+          <height>251</height>
          </rect>
         </property>
         <layout class="QFormLayout" name="formLayout_2">
@@ -525,20 +472,13 @@
        <widget class="QWidget" name="verticalLayoutWidget_2">
         <property name="geometry">
          <rect>
-          <x>1120</x>
-          <y>350</y>
+          <x>1110</x>
+          <y>250</y>
           <width>231</width>
-          <height>101</height>
+          <height>31</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QPushButton" name="csvbutton2">
-           <property name="text">
-            <string>Save to CSV</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <widget class="QPushButton" name="pngbutton2">
            <property name="text">
@@ -547,6 +487,30 @@
           </widget>
          </item>
         </layout>
+       </widget>
+       <widget class="QWidget" name="verticalLayoutWidget_3">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>1111</width>
+          <height>671</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="orientLayout"/>
+       </widget>
+       <widget class="QLabel" name="orientlabel">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>670</y>
+          <width>1111</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
        </widget>
       </widget>
       <widget class="QWidget" name="gps">
@@ -576,7 +540,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1371</width>
+     <width>1370</width>
      <height>21</height>
     </rect>
    </property>

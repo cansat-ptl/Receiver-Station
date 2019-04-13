@@ -7,8 +7,76 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QtCharts>
+#include <QtGui/QMouseEvent>
 
+ChartView::ChartView(QChart *chart, QWidget *parent) :
+    QChartView(chart, parent),
+    m_isTouching(false)
+{
+    setRubberBand(QChartView::RectangleRubberBand);
+}
 
+bool ChartView::viewportEvent(QEvent *event)
+{
+    if (event->type() == QEvent::TouchBegin) {
+        m_isTouching = true;
+        chart()->setAnimationOptions(QChart::NoAnimation);
+    }
+    return QChartView::viewportEvent(event);
+}
+
+void ChartView::mousePressEvent(QMouseEvent *event)
+{
+    if (m_isTouching)
+        return;
+    QChartView::mousePressEvent(event);
+}
+
+void ChartView::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_isTouching)
+        return;
+    QChartView::mouseMoveEvent(event);
+}
+
+void ChartView::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (m_isTouching)
+        m_isTouching = false;
+
+    // Because we disabled animations when touch event was detected
+    // we must put them back on.
+    chart()->setAnimationOptions(QChart::SeriesAnimations);
+
+    QChartView::mouseReleaseEvent(event);
+}
+
+void ChartView::keyPressEvent(QKeyEvent *event)
+{
+    switch (event->key()) {
+    case Qt::Key_Plus:
+            chart()->zoomIn();
+            break;
+    case Qt::Key_Minus:
+            chart()->zoomOut();
+            break;
+    case Qt::Key_Left:
+        chart()->scroll(-30, 0);
+        break;
+    case Qt::Key_Right:
+        chart()->scroll(30, 0);
+        break;
+    case Qt::Key_Up:
+        chart()->scroll(0, 10);
+        break;
+    case Qt::Key_Down:
+        chart()->scroll(0, -10);
+        break;
+    default:
+        QGraphicsView::keyPressEvent(event);
+        break;
+    }
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,7 +91,24 @@ MainWindow::MainWindow(QWidget *parent) :
      chart_ax = new QChart;
      chart_ay = new QChart;
      chart_az = new QChart;
-     //chart_xyz = new QChart;
+
+     chartview_alt = new ChartView(chart_alt);
+     chartview_prs = new ChartView(chart_prs);
+     chartview_vbat = new ChartView(chart_vbat);
+     chartview_t2 = new ChartView(chart_t2);
+     chartview_ax = new ChartView(chart_ax);
+     chartview_ay = new ChartView(chart_ay);
+     chartview_az = new ChartView(chart_az);
+
+     ui -> mainLayout -> addWidget(chartview_alt);
+     ui -> mainLayout -> addWidget(chartview_prs);
+     ui -> mainLayout -> addWidget(chartview_vbat);
+     ui -> mainLayout -> addWidget(chartview_t2);
+     ui -> orientLayout -> addWidget(chartview_ax);
+     ui -> orientLayout -> addWidget(chartview_ay);
+     ui -> orientLayout -> addWidget(chartview_az);
+
+
 
      // Creating QLineSeries containers for charts
      series_alt = new QLineSeries;
@@ -34,14 +119,6 @@ MainWindow::MainWindow(QWidget *parent) :
      series_ay = new QLineSeries;
      series_az = new QLineSeries;
 
-     // Conencting an QChart objects with QWidget objects in UI
-     ui -> altchart -> setChart(chart_alt);
-     ui -> prschart -> setChart(chart_prs);
-     ui -> t2chart -> setChart(chart_t2);
-     ui -> vbatchart -> setChart(chart_vbat);
-     ui -> axchart -> setChart(chart_ax);
-     ui -> aychart -> setChart(chart_ay);
-     ui -> azchart -> setChart(chart_az);
     // ui -> xyzchart -> setChart(chart_xyz);
 
      // Altitude chart setting
@@ -80,7 +157,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
      axisY_prs = new QValueAxis; // creating a QValueAxis class for Y axis of pressure chart
      axisY_prs -> setLabelFormat("%i"); // setting a value axis label format
-     axisY_prs -> setTitleText("Pascals"); // title of value axis
+     axisY_prs -> setTitleText("kPa"); // title of value axis
      chart_prs -> addAxis(axisY_prs, Qt::AlignLeft); // connecting QLineSeries container with X value axis
      series_prs -> attachAxis(axisY_prs); // connecting QLineSeries container with X value axis
 
@@ -180,32 +257,6 @@ MainWindow::MainWindow(QWidget *parent) :
      chart_az -> addAxis(axisY_az, Qt::AlignLeft);
      series_az -> attachAxis(axisY_az);
 
-   /*  // XYZ chart setting
-     chart_xyz -> legend() -> show();
-     chart_xyz -> addSeries(series_ax);
-     chart_xyz -> addSeries(series_ay);
-     chart_xyz -> addSeries(series_az);
-     chart_xyz -> setTitle("Acceleration by X,Y,Z chart");
-     // XYZ chart value axes setting
-     axisX_xyz = new QValueAxis;
-     axisX_xyz -> setLabelFormat("%i");
-     axisX_xyz -> setTickCount(1);
-     axisX_xyz -> setTitleText("Seconds");
-     chart_xyz -> addAxis(axisX_xyz, Qt::AlignBottom);
-     series_ax -> attachAxis(axisX_xyz);
-     series_ay -> attachAxis(axisX_xyz);
-     series_az -> attachAxis(axisX_xyz);
-
-     axisY_xyz = new QValueAxis;
-     axisY_xyz -> setLabelFormat("%f");
-     axisY_xyz -> setTitleText("g");
-     axisY_xyz -> setMax(16);
-     axisY_xyz -> setMin(-16);
-     chart_xyz -> addAxis(axisY_xyz, Qt::AlignLeft);
-     series_ax -> attachAxis(axisY_xyz);
-     series_ay -> attachAxis(axisY_xyz);
-     series_az -> attachAxis(axisY_xyz);*/
-
      // COM port settings
      QString portName = "";
      portName = QInputDialog::getText(this, "Please write COM port name", "COM port name:", QLineEdit::Normal);
@@ -280,7 +331,8 @@ void MainWindow::updateData(QString s)
             }
         if (type == "MAIN")
         {
-        int n = 0, et = 0, vbat = 0, alt = 0, prs = 0, t1 = 0, t2 = 0, i = 0;
+        ui -> mainlabel -> setText(s);
+        int n = 0, et = 0, vbatRaw = 0, alt = 0, prsRaw = 0, t1 = 0, t2 = 0, i = 0;
         bool damaged[7] = {false};
 
         for (i = 0; i < l; i++)
@@ -344,7 +396,7 @@ void MainWindow::updateData(QString s)
                                     break;
                                     }
                                     }
-                                vbat = temp.toInt();
+                                vbatRaw = temp.toInt();
                                 temp = "";
                             }
                         }
@@ -393,7 +445,7 @@ void MainWindow::updateData(QString s)
                                 break;
                                 }
                                 }
-                            prs = temp.toInt();
+                            prsRaw = temp.toInt();
                             temp = "";
                         }
                     }
@@ -442,7 +494,8 @@ void MainWindow::updateData(QString s)
                 }
             }
         }
-
+       double vbat = double(vbatRaw) / 10.0;
+       int prs = prsRaw / 1000;
        if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5] && !damaged[6])
         ui -> statusBar -> showMessage("Главный пакет №" + QString::number(n) + " получен удачно.");
        else
@@ -455,32 +508,32 @@ void MainWindow::updateData(QString s)
        if (!damaged[0])
            {
            ui -> nvalue -> setText(QString::number(n));
-           mainStream << n << "\t";
+           mainStream << n << ",";
            }
        if (!damaged[1])
            {
            ui -> etvalue -> setText(QString::number(et));
-           mainStream << et << "\t";
+           mainStream << et << ",";
            }
        if (!damaged[2])
            {
            ui -> vbatvalue -> setText(QString::number(vbat));
-           mainStream << vbat << "\t";
+           mainStream << vbat << ",";
            }
        if (!damaged[3])
            {
            ui -> altvalue -> setText(QString::number(alt));
-           mainStream << alt << "\t";
+           mainStream << alt << ",";
            }
        if (!damaged[4])
            {
            ui -> prsvalue -> setText(QString::number(prs));
-           mainStream << prs << "\t";
+           mainStream << prs << ",";
            }
        if (!damaged[5])
            {
            ui -> t1value -> setText(QString::number(t1));
-           mainStream << t1 << "\t";
+           mainStream << t1 << ",";
            }
        if (!damaged[6])
            {
@@ -526,9 +579,7 @@ void MainWindow::updateData(QString s)
                altMin = alt;
                axisY_alt -> setMin(altMin);
            }
-           chart_alt -> removeSeries(series_alt);
            series_alt -> append(et , alt);
-           chart_alt -> addSeries(series_alt);
        }
 
        if (!damaged[4])
@@ -543,9 +594,7 @@ void MainWindow::updateData(QString s)
                prsMin = prs;
                axisY_prs -> setMin(prsMin);
            }
-           chart_prs -> removeSeries(series_prs);
            series_prs -> append(et , prs);
-           chart_prs -> addSeries(series_prs);
        }
 
        if (!damaged[6])
@@ -560,9 +609,7 @@ void MainWindow::updateData(QString s)
                t2Min = t2;
                axisY_t2 -> setMin(t2Min);
            }
-           chart_t2 -> removeSeries(series_t2);
            series_t2 -> append(et , t2);
-           chart_t2 -> addSeries(series_t2);
        }
 
        if (!damaged[2])
@@ -577,14 +624,13 @@ void MainWindow::updateData(QString s)
                vbatMin = vbat;
                axisY_vbat -> setMin(vbatMin);
            }
-           chart_vbat -> removeSeries(series_vbat);
-           series_vbat -> append(et , double(vbat) / 10.0);
-           chart_vbat -> addSeries(series_vbat);
+           series_vbat -> append(et , vbat);
        }
        }
 
        if (type == "ORIENT")
        {
+       ui -> orientlabel -> setText(s);
        int n = 0, et = 0, rawAx = 0, rawAy = 0, rawAz = 0, i = 0;
        bool damaged[5] = {false};
 
@@ -708,22 +754,22 @@ void MainWindow::updateData(QString s)
        if (!damaged[0])
        {
            ui -> orient_nvalue -> setText(QString::number(n));
-           orientStream << n << "\t";
+           orientStream << n << ",";
        }
        if (!damaged[1])
        {
            ui -> orient_etvalue -> setText(QString::number(et));
-           orientStream << et << "\t";
+           orientStream << et << ",";
        }
        if (!damaged[2])
        {
            ui -> orient_axvalue -> setText(QString::number(ax));
-           orientStream << ax << "\t";
+           orientStream << ax << ",";
        }
        if (!damaged[3])
        {
            ui -> orient_ayvalue -> setText(QString::number(ay));
-           orientStream << ay << "\t";
+           orientStream << ay << ",";
        }
        if (!damaged[4])
        {
@@ -764,9 +810,7 @@ void MainWindow::updateData(QString s)
                axMin = ax;
                axisY_ax -> setMin(axMin);
            }
-           chart_ax -> removeSeries(series_ax);
            series_ax -> append(et , ax);
-           chart_ax -> addSeries(series_ax);
        }
 
        if (!damaged[3])
@@ -781,9 +825,7 @@ void MainWindow::updateData(QString s)
                ayMin = ay;
                axisY_ay -> setMin(ayMin);
                }
-           chart_ay -> removeSeries(series_ay);
            series_ay -> append(et , ay);
-           chart_ay -> addSeries(series_ay);
        }
 
        if (!damaged[4])
@@ -798,9 +840,7 @@ void MainWindow::updateData(QString s)
                azMin = az;
                axisY_az -> setMin(azMin);
                }
-           chart_az -> removeSeries(series_az);
            series_az -> append(et , az);
-           chart_az -> addSeries(series_az);
        }
        }
 }
@@ -808,16 +848,16 @@ void MainWindow::updateData(QString s)
 
 void MainWindow::on_pngbutton1_clicked()
 {
-    QPixmap pAlt = ui -> altchart -> grab();
+    QPixmap pAlt = chartview_alt -> grab();
     pAlt.save(".\\Images\\" + QString::number(pngCounter) + " altitude.png","PNG");
 
-    QPixmap pPrs = ui -> prschart -> grab();
+    QPixmap pPrs = chartview_prs -> grab();
     pPrs.save(".\\Images\\" + QString::number(pngCounter) + " pressure.png","PNG");
 
-    QPixmap pT2 = ui -> t2chart -> grab();
+    QPixmap pT2 = chartview_t2 -> grab();
     pT2.save(".\\Images\\" + QString::number(pngCounter) + " outside_temperature.png","PNG");
 
-    QPixmap pVbat = ui -> vbatchart -> grab();
+    QPixmap pVbat = chartview_vbat -> grab();
     pVbat.save(".\\Images\\" + QString::number(pngCounter) + " battery_voltage.png","PNG");
 
     pngCounter++;
@@ -825,13 +865,13 @@ void MainWindow::on_pngbutton1_clicked()
 
 void MainWindow::on_pngbutton2_clicked()
 {
-    QPixmap pAx = ui -> axchart -> grab();
+    QPixmap pAx = chartview_ax -> grab();
     pAx.save(".\\Images\\" + QString::number(pngCounter2) + " ax.png","PNG");
 
-    QPixmap pAy = ui -> aychart -> grab();
+    QPixmap pAy = chartview_ay -> grab();
     pAy.save(".\\Images\\" + QString::number(pngCounter2) + " ay.png","PNG");
 
-    QPixmap pAz = ui -> azchart -> grab();
+    QPixmap pAz = chartview_az -> grab();
     pAz.save(".\\Images\\" + QString::number(pngCounter2) + " az.png","PNG");
 
     pngCounter2++;
