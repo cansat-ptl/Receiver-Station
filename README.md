@@ -1,7 +1,5 @@
 # Handler of CanSat data packets
-Created Anatoly Antonov ( https://github.com/champi2061 ) for 8-th Russian Championship of project "Air and Engineering School"
-
-2019
+Created Anatoly Antonov ( https://github.com/champi2061 ) for 8-th Russian Championship of project "Air and Engineering School" 2019
 
 Realised features: draw charts of data from data packets, save them to PNG, save handled data values to CSV
 
