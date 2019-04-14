@@ -70,7 +70,6 @@ private:
     ChartView *chartview_ay;
     ChartView *chartview_az;
 
-
     QValueAxis *axisX_alt;
     QValueAxis *axisY_alt;
     QValueAxis *axisX_prs;

@@ -100,14 +100,13 @@ MainWindow::MainWindow(QWidget *parent) :
      chartview_ay = new ChartView(chart_ay);
      chartview_az = new ChartView(chart_az);
 
-     ui -> mainLayout -> addWidget(chartview_alt);
-     ui -> mainLayout -> addWidget(chartview_prs);
-     ui -> mainLayout -> addWidget(chartview_vbat);
-     ui -> mainLayout -> addWidget(chartview_t2);
+     ui -> mainLayout -> addWidget(chartview_alt, 0, 0);
+     ui -> mainLayout -> addWidget(chartview_prs, 0, 1);
+     ui -> mainLayout -> addWidget(chartview_vbat, 1, 0);
+     ui -> mainLayout -> addWidget(chartview_t2,1, 1);
      ui -> orientLayout -> addWidget(chartview_ax);
      ui -> orientLayout -> addWidget(chartview_ay);
      ui -> orientLayout -> addWidget(chartview_az);
-
 
 
      // Creating QLineSeries containers for charts
@@ -177,7 +176,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
      axisY_t2 = new QValueAxis;
      axisY_t2 -> setLabelFormat("%i");
-     axisY_t2 -> setTitleText("Celcium");
+     axisY_t2 -> setTitleText("°С");
      chart_t2 -> addAxis(axisY_t2, Qt::AlignLeft);
      series_t2 -> attachAxis(axisY_t2);
 
@@ -194,7 +193,7 @@ MainWindow::MainWindow(QWidget *parent) :
      series_vbat -> attachAxis(axisX_vbat);
 
      axisY_vbat = new QValueAxis;
-     axisY_vbat -> setLabelFormat("%f");
+     axisY_vbat -> setLabelFormat("%.2f");
      axisY_vbat -> setTitleText("Volts");
      chart_vbat -> addAxis(axisY_vbat, Qt::AlignLeft);
      series_vbat -> attachAxis(axisY_vbat);
@@ -212,8 +211,8 @@ MainWindow::MainWindow(QWidget *parent) :
      series_ax -> attachAxis(axisX_ax);
 
      axisY_ax = new QValueAxis;
-     axisY_ax -> setLabelFormat("%f");
-     axisY_ax -> setTitleText("g");
+     axisY_ax -> setLabelFormat("%.2f");
+     axisY_ax -> setTitleText("m/s²");
      chart_ax -> addAxis(axisY_ax, Qt::AlignLeft);
      series_ax -> attachAxis(axisY_ax);
 
@@ -230,8 +229,8 @@ MainWindow::MainWindow(QWidget *parent) :
      series_ay -> attachAxis(axisX_ay);
 
      axisY_ay = new QValueAxis;
-     axisY_ay -> setLabelFormat("%f");
-     axisY_ay -> setTitleText("g");
+     axisY_ay -> setLabelFormat("%.2f");
+     axisY_ay -> setTitleText("m/s²");
      axisY_ay -> setMax(16);
      axisY_ay -> setMin(-16);
      chart_ay -> addAxis(axisY_ay, Qt::AlignLeft);
@@ -250,8 +249,8 @@ MainWindow::MainWindow(QWidget *parent) :
      series_az -> attachAxis(axisX_az);
 
      axisY_az = new QValueAxis;
-     axisY_az -> setLabelFormat("%f");
-     axisY_az -> setTitleText("g");
+     axisY_az -> setLabelFormat("%.2f");
+     axisY_az -> setTitleText("m/s²");
      axisY_az -> setMax(16);
      axisY_az -> setMin(-16);
      chart_az -> addAxis(axisY_az, Qt::AlignLeft);
@@ -740,7 +739,7 @@ void MainWindow::updateData(QString s)
                }
            }
 
-       double ax = double(rawAx) / 10.0, ay = double(rawAy) / 10.0, az = double(rawAz) / 10.0;
+       double ax = (double(rawAx) / 10.0) * 9.81, ay = (double(rawAy) / 10.0) * 9.81, az = (double(rawAz) / 10.0) * 9.81;
 
        if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4])
            ui -> statusBar -> showMessage("Пакет ориентации №" + QString::number(n) + " получен удачно");
