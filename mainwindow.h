@@ -47,6 +47,8 @@ private slots:
     void on_pngbutton2_clicked();
 
 
+    void on_reconnectButtonR_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSerialPort *receiver;

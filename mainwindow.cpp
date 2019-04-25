@@ -257,15 +257,15 @@ MainWindow::MainWindow(QWidget *parent) :
      series_az -> attachAxis(axisY_az);
 
      // COM port settings
-     QString portName = "";
-     portName = QInputDialog::getText(this, "Please write COM port name", "COM port name:", QLineEdit::Normal);
+     QString portNameR = QInputDialog::getText(this, "Please fill", "Receiver COM port name:", QLineEdit::Normal);
+     QString baudRateR = QInputDialog::getText(this, "Please fill", "Receiver baud rate", QLineEdit::Normal);
      receiver = new QSerialPort(this); // creating a object of receiver using as radio input
      serialBuffer = ""; // buffer for data packets
      parsed_data = ""; // handled version of data packets
 
-     receiver -> setPortName(portName);
+     receiver -> setPortName(portNameR);
      receiver -> open(QSerialPort::ReadOnly);
-     receiver -> setBaudRate(QSerialPort::Baud9600);
+     receiver -> setBaudRate(baudRateR.toInt());
      receiver -> setDataBits(QSerialPort::Data8);
      receiver -> setFlowControl(QSerialPort::NoFlowControl);
      receiver -> setParity(QSerialPort::NoParity);
@@ -274,6 +274,14 @@ MainWindow::MainWindow(QWidget *parent) :
      QObject::connect(receiver, SIGNAL(readyRead()), this, SLOT(readSerial()));
 
 }
+
+void MainWindow::on_reconnectButtonR_clicked()
+{
+receiver -> close();
+receiver -> open(QSerialPort::ReadOnly);
+Sleep(uint(2000));
+}
+
 
 MainWindow::~MainWindow()
 {
@@ -328,304 +336,7 @@ void MainWindow::updateData(QString s)
                     }
                 }
             }
-        if (type == "MAIN")
-        {
-        ui -> mainlabel -> setText(s);
-        int n = 0, et = 0, vbatRaw = 0, alt = 0, prsRaw = 0, t1 = 0, t2 = 0, i = 0;
-        bool damaged[7] = {false};
 
-        for (i = 0; i < l; i++)
-        {
-            if (s[i] == '=')
-            {
-                if (s[i - 1] == 'N')
-                {
-                    while (s[i + 1] != ';')
-                        {
-                        temp += s[i + 1];
-                        i++;
-                        if (i > l)
-                        {
-                            damaged[0] = true;
-                            break;
-                        }
-                        }
-                    n = temp.toInt();
-                    temp = "";
-                }
-            }
-            if (s[i] == '=')
-            {
-                if (s[i - 1] == 'T')
-                {
-                    if (s[i - 2] == 'E')
-                    {
-                        while (s[i + 1] != ';')
-                            {
-                            temp += s[i + 1];
-                            i++;
-                            if (i > l)
-                            {
-                            damaged[1] = true;
-                            break;
-                            }
-                            }
-                        et = temp.toInt();
-                        temp = "";
-                    }
-                }
-            }
-            if (s[i] == '=')
-            {
-                if (s[i - 1] == 'T')
-                {
-                    if (s[i - 2] == 'A')
-                    {
-                        if (s[i - 3] == 'B')
-                        {
-                            if (s[i - 4] == 'V')
-                            {
-                                while (s[i + 1] != ';')
-                                    {
-                                    temp += s[i + 1];
-                                    i++;
-                                    if (i > l)
-                                    {
-                                    damaged[2] = true;
-                                    break;
-                                    }
-                                    }
-                                vbatRaw = temp.toInt();
-                                temp = "";
-                            }
-                        }
-                    }
-                }
-            }
-            if (s[i] == '=')
-            {
-                if (s[i - 1] == 'T')
-                {
-                    if (s[i - 2] == 'L')
-                    {
-                        if(s[i - 3] == 'A')
-                        {
-                            while (s[i + 1] != ';')
-                                {
-                                temp += s[i + 1];
-                                i++;
-                                if (i > l)
-                                {
-                                damaged[3] = true;
-                                break;
-                                }
-                                }
-                            alt = temp.toInt();
-                            temp = "";
-                        }
-                    }
-                }
-            }
-            if (s[i] == '=')
-            {
-                if (s[i - 1] == 'S')
-                {
-                    if (s[i - 2] == 'R')
-                    {
-                        if(s[i - 3] == 'P')
-                        {
-                            while (s[i + 1] != ';')
-                                {
-                                temp += s[i + 1];
-                                i++;
-                                if (i > l)
-                                {
-                                damaged[4] = true;
-                                break;
-                                }
-                                }
-                            prsRaw = temp.toInt();
-                            temp = "";
-                        }
-                    }
-                }
-            }
-            if (s[i] == '=')
-            {
-                if (s[i - 1] == '1')
-                {
-                    if (s[i - 2] == 'T')
-                    {
-                            while (s[i + 1] != ';')
-                                {
-                                temp += s[i + 1];
-                                i++;
-                                if (i > l)
-                                {
-                                damaged[5] = true;
-                                break;
-                                }
-                                }
-                            t1 = temp.toInt();
-                            temp = "";
-                    }
-                }
-            }
-            if (s[i] == '=')
-            {
-                if (s[i - 1] == '2')
-                {
-                    if (s[i - 2] == 'T')
-                    {
-                            while (s[i + 1] != ';')
-                                {
-                                temp += s[i + 1];
-                                i++;
-                                if (i > l)
-                                {
-                                damaged[6] = true;
-                                break;
-                                }
-                                }
-                            t2 = temp.toInt();
-                            temp = "";
-                    }
-                }
-            }
-        }
-       double vbat = double(vbatRaw) / 10.0;
-       int prs = prsRaw / 1000;
-       if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5] && !damaged[6])
-        ui -> statusBar -> showMessage("Главный пакет №" + QString::number(n) + " получен удачно.");
-       else
-        ui -> statusBar -> showMessage("Последний пакет принят с повреждениями, данные могут быть неточны");
-       QFile dataMain(".\\CSVs\\data_main.csv");
-       dataMain.open(QFile::WriteOnly|QFile::Append);
-       QTextStream mainStream(&dataMain);
-
-       // Updating labels in right side of UI
-       if (!damaged[0])
-           {
-           ui -> nvalue -> setText(QString::number(n));
-           mainStream << n << ",";
-           }
-       if (!damaged[1])
-           {
-           ui -> etvalue -> setText(QString::number(et));
-           mainStream << et << ",";
-           }
-       if (!damaged[2])
-           {
-           ui -> vbatvalue -> setText(QString::number(vbat));
-           mainStream << vbat << ",";
-           }
-       if (!damaged[3])
-           {
-           ui -> altvalue -> setText(QString::number(alt));
-           mainStream << alt << ",";
-           }
-       if (!damaged[4])
-           {
-           ui -> prsvalue -> setText(QString::number(prs));
-           mainStream << prs << ",";
-           }
-       if (!damaged[5])
-           {
-           ui -> t1value -> setText(QString::number(t1));
-           mainStream << t1 << ",";
-           }
-       if (!damaged[6])
-           {
-           ui -> t2value -> setText(QString::number(t2));
-           mainStream << t2 << "\n";
-           }
-       dataMain.close();
-
-       // et = estimated time
-       // Updating charts and X axis of every chart setting new maximum that is ET
-       if (!damaged[1])
-       {
-           if (et > etMin1)
-           {
-               etMin1 = INT_MAX;
-               axisX_alt -> setMin(et);
-               axisX_prs -> setMin(et);
-               axisX_t2 -> setMin(et);
-               axisX_vbat -> setMin(et);
-               axisX_alt -> setMax(et + 1);
-               axisX_prs -> setMax(et + 1);
-               axisX_t2 -> setMax(et + 1);
-               axisX_vbat -> setMax(et + 1);
-           }
-           else
-           {
-               axisX_alt -> setMax(et);
-               axisX_prs -> setMax(et);
-               axisX_t2 -> setMax(et);
-               axisX_vbat -> setMax(et);
-           }
-       }
-
-       if (!damaged[3])
-       {
-           if (alt > altMax)
-           {
-               altMax = alt;
-               axisY_alt -> setMax(altMax);
-           }
-           if (alt < altMin)
-           {
-               altMin = alt;
-               axisY_alt -> setMin(altMin);
-           }
-           series_alt -> append(et , alt);
-       }
-
-       if (!damaged[4])
-       {
-           if (prs > prsMax)
-           {
-               prsMax = prs;
-               axisY_prs -> setMax(prsMax);
-           }
-           if (prs < prsMin)
-           {
-               prsMin = prs;
-               axisY_prs -> setMin(prsMin);
-           }
-           series_prs -> append(et , prs);
-       }
-
-       if (!damaged[6])
-       {
-           if (t2 > t2Max)
-           {
-               t2Max = t2;
-               axisY_t2 -> setMax(t2Max);
-           }
-           if (t2 < t2Min)
-           {
-               t2Min = t2;
-               axisY_t2 -> setMin(t2Min);
-           }
-           series_t2 -> append(et , t2);
-       }
-
-       if (!damaged[2])
-       {
-           if (vbat > vbatMax)
-           {
-               vbatMax = vbat;
-               axisY_vbat -> setMax(vbatMax);
-           }
-           if (vbat < vbatMin)
-           {
-               vbatMin = vbat;
-               axisY_vbat -> setMin(vbatMin);
-           }
-           series_vbat -> append(et , vbat);
-       }
-       }
 
        if (type == "ORIENT")
        {
@@ -842,6 +553,304 @@ void MainWindow::updateData(QString s)
            series_az -> append(et , az);
        }
        }
+       else
+       {
+       ui -> mainlabel -> setText(s);
+       int n = 0, et = 0, vbatRaw = 0, alt = 0, prsRaw = 0, t1 = 0, t2 = 0, i = 0;
+       bool damaged[7] = {false};
+
+       for (i = 0; i < l; i++)
+       {
+           if (s[i] == '=')
+           {
+               if (s[i - 1] == 'N')
+               {
+                   while (s[i + 1] != ';')
+                       {
+                       temp += s[i + 1];
+                       i++;
+                       if (i > l)
+                       {
+                           damaged[0] = true;
+                           break;
+                       }
+                       }
+                   n = temp.toInt();
+                   temp = "";
+               }
+           }
+           if (s[i] == '=')
+           {
+               if (s[i - 1] == 'T')
+               {
+                   if (s[i - 2] == 'E')
+                   {
+                       while (s[i + 1] != ';')
+                           {
+                           temp += s[i + 1];
+                           i++;
+                           if (i > l)
+                           {
+                           damaged[1] = true;
+                           break;
+                           }
+                           }
+                       et = temp.toInt();
+                       temp = "";
+                   }
+               }
+           }
+           if (s[i] == '=')
+           {
+               if (s[i - 1] == 'T')
+               {
+                   if (s[i - 2] == 'A')
+                   {
+                       if (s[i - 3] == 'B')
+                       {
+                           if (s[i - 4] == 'V')
+                           {
+                               while (s[i + 1] != ';')
+                                   {
+                                   temp += s[i + 1];
+                                   i++;
+                                   if (i > l)
+                                   {
+                                   damaged[2] = true;
+                                   break;
+                                   }
+                                   }
+                               vbatRaw = temp.toInt();
+                               temp = "";
+                           }
+                       }
+                   }
+               }
+           }
+           if (s[i] == '=')
+           {
+               if (s[i - 1] == 'T')
+               {
+                   if (s[i - 2] == 'L')
+                   {
+                       if(s[i - 3] == 'A')
+                       {
+                           while (s[i + 1] != ';')
+                               {
+                               temp += s[i + 1];
+                               i++;
+                               if (i > l)
+                               {
+                               damaged[3] = true;
+                               break;
+                               }
+                               }
+                           alt = temp.toInt();
+                           temp = "";
+                       }
+                   }
+               }
+           }
+           if (s[i] == '=')
+           {
+               if (s[i - 1] == 'S')
+               {
+                   if (s[i - 2] == 'R')
+                   {
+                       if(s[i - 3] == 'P')
+                       {
+                           while (s[i + 1] != ';')
+                               {
+                               temp += s[i + 1];
+                               i++;
+                               if (i > l)
+                               {
+                               damaged[4] = true;
+                               break;
+                               }
+                               }
+                           prsRaw = temp.toInt();
+                           temp = "";
+                       }
+                   }
+               }
+           }
+           if (s[i] == '=')
+           {
+               if (s[i - 1] == '1')
+               {
+                   if (s[i - 2] == 'T')
+                   {
+                           while (s[i + 1] != ';')
+                               {
+                               temp += s[i + 1];
+                               i++;
+                               if (i > l)
+                               {
+                               damaged[5] = true;
+                               break;
+                               }
+                               }
+                           t1 = temp.toInt();
+                           temp = "";
+                   }
+               }
+           }
+           if (s[i] == '=')
+           {
+               if (s[i - 1] == '2')
+               {
+                   if (s[i - 2] == 'T')
+                   {
+                           while (s[i + 1] != ';')
+                               {
+                               temp += s[i + 1];
+                               i++;
+                               if (i > l)
+                               {
+                               damaged[6] = true;
+                               break;
+                               }
+                               }
+                           t2 = temp.toInt();
+                           temp = "";
+                   }
+               }
+           }
+       }
+      double vbat = double(vbatRaw) / 10.0;
+      int prs = prsRaw / 1000;
+      if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5] && !damaged[6])
+       ui -> statusBar -> showMessage("Главный пакет №" + QString::number(n) + " получен удачно.");
+      else
+       ui -> statusBar -> showMessage("Последний пакет принят с повреждениями, данные могут быть неточны");
+      QFile dataMain(".\\CSVs\\data_main.csv");
+      dataMain.open(QFile::WriteOnly|QFile::Append);
+      QTextStream mainStream(&dataMain);
+
+      // Updating labels in right side of UI
+      if (!damaged[0])
+          {
+          ui -> nvalue -> setText(QString::number(n));
+          mainStream << n << ",";
+          }
+      if (!damaged[1])
+          {
+          ui -> etvalue -> setText(QString::number(et));
+          mainStream << et << ",";
+          }
+      if (!damaged[2])
+          {
+          ui -> vbatvalue -> setText(QString::number(vbat));
+          mainStream << vbat << ",";
+          }
+      if (!damaged[3])
+          {
+          ui -> altvalue -> setText(QString::number(alt));
+          mainStream << alt << ",";
+          }
+      if (!damaged[4])
+          {
+          ui -> prsvalue -> setText(QString::number(prs));
+          mainStream << prs << ",";
+          }
+      if (!damaged[5])
+          {
+          ui -> t1value -> setText(QString::number(t1));
+          mainStream << t1 << ",";
+          }
+      if (!damaged[6])
+          {
+          ui -> t2value -> setText(QString::number(t2));
+          mainStream << t2 << "\n";
+          }
+      dataMain.close();
+
+      // et = estimated time
+      // Updating charts and X axis of every chart setting new maximum that is ET
+      if (!damaged[1])
+      {
+          if (et > etMin1)
+          {
+              etMin1 = INT_MAX;
+              axisX_alt -> setMin(et);
+              axisX_prs -> setMin(et);
+              axisX_t2 -> setMin(et);
+              axisX_vbat -> setMin(et);
+              axisX_alt -> setMax(et + 1);
+              axisX_prs -> setMax(et + 1);
+              axisX_t2 -> setMax(et + 1);
+              axisX_vbat -> setMax(et + 1);
+          }
+          else
+          {
+              axisX_alt -> setMax(et);
+              axisX_prs -> setMax(et);
+              axisX_t2 -> setMax(et);
+              axisX_vbat -> setMax(et);
+          }
+      }
+
+      if (!damaged[3])
+      {
+          if (alt > altMax)
+          {
+              altMax = alt;
+              axisY_alt -> setMax(altMax);
+          }
+          if (alt < altMin)
+          {
+              altMin = alt;
+              axisY_alt -> setMin(altMin);
+          }
+          series_alt -> append(et , alt);
+      }
+
+      if (!damaged[4])
+      {
+          if (prs > prsMax)
+          {
+              prsMax = prs;
+              axisY_prs -> setMax(prsMax);
+          }
+          if (prs < prsMin)
+          {
+              prsMin = prs;
+              axisY_prs -> setMin(prsMin);
+          }
+          series_prs -> append(et , prs);
+      }
+
+      if (!damaged[6])
+      {
+          if (t2 > t2Max)
+          {
+              t2Max = t2;
+              axisY_t2 -> setMax(t2Max);
+          }
+          if (t2 < t2Min)
+          {
+              t2Min = t2;
+              axisY_t2 -> setMin(t2Min);
+          }
+          series_t2 -> append(et , t2);
+      }
+
+      if (!damaged[2])
+      {
+          if (vbat > vbatMax)
+          {
+              vbatMax = vbat;
+              axisY_vbat -> setMax(vbatMax);
+          }
+          if (vbat < vbatMin)
+          {
+              vbatMin = vbat;
+              axisY_vbat -> setMin(vbatMin);
+          }
+          series_vbat -> append(et , vbat);
+      }
+      }
 }
 
 
@@ -875,3 +884,4 @@ void MainWindow::on_pngbutton2_clicked()
 
     pngCounter2++;
 }
+
