@@ -14,5 +14,5 @@ receiver must send in COM port data packets with format "NAME:[packetname]:[data
 
 "YKTSAT5:MAIN:N=100;ET=215;VBAT=732;ALT=540;PRS=1004323;T1=440;T2=213;\r\n"
 
-"YKTSAT5:ORIENT:N=1;AX=1-100;AY=1-100;AZ=1-100;\r\n"
+"YKTSAT5:ORIENT:N=15;ET=27;AX=83;AY=140;AZ=-60;\r\n"
 
