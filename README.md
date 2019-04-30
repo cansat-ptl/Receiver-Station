@@ -12,5 +12,6 @@ Coming soon: realtime offline map with pointer of CanSat by GPS data, guiding an
 
 receiver must send in COM port data packets with format "NAME:[packetname]:[data];", example:
 YKTSAT5:MAIN:N=100;ET=215;VBAT=732;ALT=540;PRS=1004323;T1=440;T2=213;\r\n
+
 YKTSAT5:ORIENT:N=1;AX=1-100;AY=1-100;AZ=1-100;\r\n
 
