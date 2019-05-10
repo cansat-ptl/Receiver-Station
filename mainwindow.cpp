@@ -129,16 +129,12 @@ MainWindow::MainWindow(QWidget *parent) :
     axisX_alt = new QValueAxis; // creating a QValueAxis class for X axis of altitude chart
     axisX_alt -> setLabelFormat("%i"); // setting a value axis label format
     axisX_alt -> setTitleText("Seconds"); // title of value axis
-    axisX_alt -> setMin(0); // minimal value of X axis (estimated time)
-    axisX_alt -> setMax(1); // first maximal value of X axis, will be changed (check updateData() func.)
     chart_alt -> addAxis(axisX_alt, Qt::AlignBottom); // connecting X value axis with altitude chart
     series_alt -> attachAxis(axisX_alt); // connecting QLineSeries container with X value axis
 
     axisY_alt = new QValueAxis; // creating a QValueAxis class for Y axis of altitude chart
     axisY_alt -> setLabelFormat("%i"); // setting a value axis label format
     axisY_alt -> setTitleText("Meters"); // title of value axis
-    axisY_alt -> setMax(1000); // maximal value of altitude
-    axisY_alt -> setMin(0); // minimal value of altitude (literally ground)
     chart_alt -> addAxis(axisY_alt, Qt::AlignLeft); // connecting QLineSeries container with Y value axis
     series_alt -> attachAxis(axisY_alt);  // connecting QLineSeries container with Y value axis
 
@@ -150,8 +146,6 @@ MainWindow::MainWindow(QWidget *parent) :
     axisX_prs = new QValueAxis; // creating a QValueAxis class for X axis of pressure chart
     axisX_prs -> setLabelFormat("%i"); // setting a value axis label format
     axisX_prs -> setTitleText("Seconds"); // title of value axis
-    axisX_prs -> setMin(0); // minimal value of X axis (estimated time)
-    axisX_prs -> setMax(1); // first maximal value of X axis, will be changed (check updateData() func.)
     chart_prs -> addAxis(axisX_prs, Qt::AlignBottom); // connecting X value axis with pressure chart
     series_prs -> attachAxis(axisX_prs); // connecting QLineSeries container with X value axis
 
@@ -169,8 +163,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // Outside temperature chart axis setting
     axisX_t2 = new QValueAxis;
     axisX_t2 -> setLabelFormat("%i");
-    axisX_t2 -> setMin(0);
-    axisX_t2 -> setMax(0);
     axisX_t2 -> setTitleText("Seconds");
     chart_t2 -> addAxis(axisX_t2, Qt::AlignBottom);
     series_t2 -> attachAxis(axisX_t2);
@@ -232,8 +224,6 @@ MainWindow::MainWindow(QWidget *parent) :
     axisY_ay = new QValueAxis;
     axisY_ay -> setLabelFormat("%.2f");
     axisY_ay -> setTitleText("m/s²");
-    axisY_ay -> setMax(16);
-    axisY_ay -> setMin(-16);
     chart_ay -> addAxis(axisY_ay, Qt::AlignLeft);
     series_ay -> attachAxis(axisY_ay);
 
@@ -252,22 +242,27 @@ MainWindow::MainWindow(QWidget *parent) :
     axisY_az = new QValueAxis;
     axisY_az -> setLabelFormat("%.2f");
     axisY_az -> setTitleText("m/s²");
-    axisY_az -> setMax(16);
-    axisY_az -> setMin(-16);
     chart_az -> addAxis(axisY_az, Qt::AlignLeft);
     series_az -> attachAxis(axisY_az);
 
     ui -> orient_terminal -> setReadOnly(1);
     ui -> main_terminal -> setReadOnly(1);
-    QPalette pMain = ui -> main_terminal -> palette(); // define pallete for textEdit..
-    pMain.setColor(QPalette::Base, Qt::black); // set color "Red" for textedit base
-    pMain.setColor(QPalette::Text, Qt::green); // set text color which is selected from color pallete
-    ui -> main_terminal -> setPalette(pMain); // change textedit palette
+    ui -> gps_terminal -> setReadOnly(1);
 
-    QPalette pOrient = ui -> orient_terminal -> palette(); // define pallete for textEdit..
-    pOrient.setColor(QPalette::Base, Qt::black); // set color "Red" for textedit base
-    pOrient.setColor(QPalette::Text, Qt::green); // set text color which is selected from color pallete
-    ui -> orient_terminal -> setPalette(pOrient); // change textedit palette
+    QPalette pMain = ui -> main_terminal -> palette();
+    pMain.setColor(QPalette::Base, Qt::black);
+    pMain.setColor(QPalette::Text, Qt::green);
+    ui -> main_terminal -> setPalette(pMain);
+
+    QPalette pOrient = ui -> orient_terminal -> palette();
+    pOrient.setColor(QPalette::Base, Qt::black);
+    pOrient.setColor(QPalette::Text, Qt::green);
+    ui -> orient_terminal -> setPalette(pOrient);
+
+    QPalette pGPS = ui -> gps_terminal -> palette();
+    pGPS.setColor(QPalette::Base, Qt::black);
+    pGPS.setColor(QPalette::Text, Qt::green);
+    ui -> gps_terminal -> setPalette(pGPS);
 
     // COM port settings
     QString portNameR = QInputDialog::getText(this, "Please fill", "Receiver COM port name:", QLineEdit::Normal);
@@ -283,6 +278,7 @@ MainWindow::MainWindow(QWidget *parent) :
     receiver -> setFlowControl(QSerialPort::NoFlowControl);
     receiver -> setParity(QSerialPort::NoParity);
     receiver -> setStopBits(QSerialPort::OneStop);
+    receiver -> flush();
 
     QObject::connect(receiver, SIGNAL(readyRead()), this, SLOT(readSerial()));
 
@@ -486,22 +482,22 @@ void MainWindow::updateData(QString s)
         }
         if (!damaged[1])
         {
-            ui -> orient_etvalue -> setText(QString::number(et));
+            ui -> orient_etvalue -> setText(QString::number(et) + " s");
             orientStream << et << ",";
         }
         if (!damaged[2])
         {
-            ui -> orient_axvalue -> setText(QString::number(ax));
+            ui -> orient_axvalue -> setText(QString::number(ax) + " m/s²");
             orientStream << ax << ",";
         }
         if (!damaged[3])
         {
-            ui -> orient_ayvalue -> setText(QString::number(ay));
+            ui -> orient_ayvalue -> setText(QString::number(ay) + " m/s²");
             orientStream << ay << ",";
         }
         if (!damaged[4])
         {
-            ui -> orient_azvalue -> setText(QString::number(az));
+            ui -> orient_azvalue -> setText(QString::number(az) + " m/s²");
             orientStream << az << "\n";
         }
         dataOrient.close();
@@ -571,11 +567,206 @@ void MainWindow::updateData(QString s)
             series_az -> append(et , az);
         }
     }
+    else if (type == "GPS")
+    {
+        int i = 0, n = 0, et = 0, altRaw = 0, sat = 0;
+        double lat = 0, lon = 0;
+        temp = "";
+        bool damaged[6] = {false};
+            for (i = 0; i < l; i++)
+            {
+                if (s[i] == '=')
+                {
+                    if (s[i - 1] == 'N')
+                    {
+                        if (s[i - 2] != 'O')
+                        {
+                            while (s[i + 1] != ';')
+                            {
+                                temp += s[i + 1];
+                                i++;
+                                if (i > l)
+                                {
+                                    damaged[0] = true;
+                                    break;
+                                }
+                            }
+                            n = temp.toInt();
+                            temp = "";
+                        }
+                    }
+                }
+                if (s[i] == '=')
+                {
+                    if (s[i - 1] == 'T')
+                    {
+                        if (s[i - 2] == 'E')
+                        {
+                            while (s[i + 1] != ';')
+                            {
+                                temp += s[i + 1];
+                                i++;
+                                if (i > l)
+                                {
+                                    damaged[1] = true;
+                                    break;
+                                }
+                            }
+                            et = temp.toInt();
+                            temp = "";
+                        }
+                    }
+                }
+                if (s[i] == '=')
+                {
+                    if (s[i - 1] == 'T')
+                    {
+                        if (s[i - 2] == 'A')
+                        {
+                            if (s[i - 3] == 'S')
+                            {
+                                while (s[i + 1] != ';')
+                                {
+                                    temp += s[i + 1];
+                                    i++;
+                                    if (i > l)
+                                    {
+                                        damaged[2] = true;
+                                        break;
+                                    }
+                                }
+                                sat = temp.toInt();
+                                temp = "";
+                            }
+                        }
+                    }
+                }
+                if (s[i] == '=')
+                {
+                    if (s[i - 1] == 'T')
+                    {
+                        if (s[i - 2] == 'A')
+                        {
+                            if(s[i - 3] == 'L')
+                            {
+                                while (s[i + 1] != ';')
+                                {
+                                    temp += s[i + 1];
+                                    i++;
+                                    if (i > l)
+                                    {
+                                        damaged[3] = true;
+                                        break;
+                                    }
+                                }
+                                lat = temp.toDouble();
+                                temp = "";
+                            }
+                        }
+                    }
+                }
+                if (s[i] == '=')
+                {
+                    if (s[i - 1] == 'N')
+                    {
+                        if (s[i - 2] == 'O')
+                        {
+                            if(s[i - 3] == 'L')
+                            {
+                                while (s[i + 1] != ';')
+                                {
+                                    temp += s[i + 1];
+                                    i++;
+                                    if (i > l)
+                                    {
+                                        damaged[4] = true;
+                                        break;
+                                    }
+                                }
+                                lon = temp.toDouble();
+                                temp = "";
+                            }
+                        }
+                    }
+                }
+                if (s[i] == '=')
+                {
+                    if (s[i - 1] == 'T')
+                    {
+                        if (s[i - 2] == 'L')
+                        {
+                            if (s[i - 3] == 'A')
+                            {
+                                while (s[i + 1] != ';')
+                                {
+                                    temp += s[i + 1];
+                                    i++;
+                                    if (i > l)
+                                    {
+                                        damaged[5] = true;
+                                        break;
+                                    }
+                                }
+                                altRaw = temp.toInt();
+                                temp = "";
+                            }
+                        }
+                    }
+                }
+            }
+            double alt = altRaw / 10;
+            if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5])
+            {
+                ui -> statusBar -> showMessage("Пакет ориентации №" + QString::number(n) + " получен удачно.");
+                ui -> gps_terminal -> append(s + "\t OK");
+            }
+            else
+            {
+                ui -> statusBar -> showMessage("Последний пакет принят с повреждениями, данные могут быть неточны");
+                ui -> gps_terminal -> append(s + "\t OK");
+            }
+            QFile dataGPS(".\\CSVs\\data_gps.csv");
+            dataGPS.open(QFile::WriteOnly|QFile::Append);
+            QTextStream gpsStream(&dataGPS);
+
+            // Updating labels in right side of UI
+            if (!damaged[0])
+            {
+                ui -> gps_nvalue -> setText(QString::number(n));
+                gpsStream << n << ",";
+            }
+            if (!damaged[1])
+            {
+                ui -> gps_etvalue -> setText(QString::number(et) + " s");
+                gpsStream << et << ",";
+            }
+            if (!damaged[2])
+            {
+                ui -> gps_latvalue -> setText(QString::number(lat) + " °");
+                gpsStream << lat << ",";
+            }
+            if (!damaged[3])
+            {
+                ui -> gps_lonvalue -> setText(QString::number(lon) + " °");
+                gpsStream << lon << ",";
+            }
+            if (!damaged[4])
+            {
+                ui -> gps_satvalue -> setText(QString::number(sat));
+                gpsStream << sat << ",";
+            }
+            if (!damaged[5])
+            {
+                ui -> gps_altvalue -> setText(QString::number(alt) + " m");
+                gpsStream << alt << "\n";
+            }
+            dataGPS.close();
+    }
     else
     {
         int n = 0, et = 0, vbatRaw = 0, alt = 0, prsRaw = 0, t1 = 0, t2 = 0, i = 0;
         bool damaged[7] = {false};
-
+        temp = "";
         for (i = 0; i < l; i++)
         {
             if (s[i] == '=')
@@ -759,32 +950,32 @@ void MainWindow::updateData(QString s)
         }
         if (!damaged[1])
         {
-            ui -> etvalue -> setText(QString::number(et));
+            ui -> etvalue -> setText(QString::number(et) + " s");
             mainStream << et << ",";
         }
         if (!damaged[2])
         {
-            ui -> vbatvalue -> setText(QString::number(vbat));
+            ui -> vbatvalue -> setText(QString::number(vbat) + " V");
             mainStream << vbat << ",";
         }
         if (!damaged[3])
         {
-            ui -> altvalue -> setText(QString::number(alt));
+            ui -> altvalue -> setText(QString::number(alt) + " m");
             mainStream << alt << ",";
         }
         if (!damaged[4])
         {
-            ui -> prsvalue -> setText(QString::number(prs));
+            ui -> prsvalue -> setText(QString::number(prs) + " kPa");
             mainStream << prs << ",";
         }
         if (!damaged[5])
         {
-            ui -> t1value -> setText(QString::number(t1));
+            ui -> t1value -> setText(QString::number(t1) + " C°");
             mainStream << t1 << ",";
         }
         if (!damaged[6])
         {
-            ui -> t2value -> setText(QString::number(t2));
+            ui -> t2value -> setText(QString::number(t2) + " C°");
             mainStream << t2 << "\n";
         }
         dataMain.close();

@@ -10,6 +10,7 @@
 
 
 
+
 namespace Ui {
 class MainWindow;
 }
@@ -98,20 +99,20 @@ private:
     int pngCounter = 0;
     int pngCounter2 = 0;
 
-    int altMax = 0;
-    int prsMax = 0;
-    int t2Max = 0;
-    double vbatMax = 6;
-    int altMin = 100000;
-    int prsMin = 120000;
-    int t2Min = 100;
-    double vbatMin = 9;
-    double axMax = -20.0;
-    double axMin = 20.0;
-    double ayMax = -20.0;
-    double ayMin = 20.0;
-    double azMax = -20.0;
-    double azMin = 20.0;
+    int altMax = -1;
+    int prsMax = -1;
+    int t2Max = -1;
+    double vbatMax = -1;
+    int altMin = INT_MAX;
+    int prsMin = INT_MAX;
+    int t2Min = INT_MAX;
+    double vbatMin = 999999;
+    double axMax = -1;
+    double axMin = 999999;
+    double ayMax = -1;
+    double ayMin = 999999;
+    double azMax = -1;
+    double azMin = 999999;
     int etMin1 = 0;
     int etMin2 = 0;
 

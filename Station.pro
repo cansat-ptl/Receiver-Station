@@ -36,3 +36,5 @@ win32 {
         OTHER_FILES += rc.rc
 }
 
+DISTFILES +=
+
