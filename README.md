@@ -6,8 +6,8 @@ Realised features: draw charts of data from data packets(zoomable, scrollable, a
 Coming soon: realtime offline map with pointer of CanSat by GPS data
 
 # How to use:
-1) Run test.exe, write down your COM port name and settings. Example: "COM3" , "Baudrate: 9600" , etc.
-2) Run Station.exe, and enter your COM port name and settings.
+1) Run test.exe (from release-tester) write down your COM port name and settings. Example: "COM3" , "Baudrate: 9600" , etc.
+2) Run Station.exe (from release-master), and enter your COM port name and settings.
 3) enjoy! don't waste your time , create things, happy coding.
 
 receiver must send in COM port data packets with format "NAME:[packetname]:[data];", example:
