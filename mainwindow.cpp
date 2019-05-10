@@ -715,6 +715,7 @@ void MainWindow::updateData(QString s)
                 }
             }
             double alt = altRaw / 10;
+            altGPS = alt;
             if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5])
             {
                 ui -> statusBar -> showMessage("Пакет ориентации №" + QString::number(n) + " получен удачно.");
@@ -761,6 +762,20 @@ void MainWindow::updateData(QString s)
                 gpsStream << alt << "\n";
             }
             dataGPS.close();
+
+            // Calculating antenna angles
+            double r = 6371200.0 + ((altBar + altGPS) / 2);
+            double x1 = r * cos(lat) * cos(lon);
+            double y1 = r * cos(lat) * sin(lon);
+            double z1 = (altBar + altGPS) / 2;
+            double x2 = r * cos(latStation) * cos(lonStation);
+            double y2 = r * cos(latStation) * sin(lonStation);
+            double z2 = altStation;
+            double alpha = atan(abs(y2 - y1) / abs(x2 - x1)) * 180/M_PI;
+            double hypot = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+            double beta = atan(abs(z2 - z1) / hypot) * 180/M_PI;
+            ui -> angle_alpha -> setText(QString::number(alpha));
+            ui -> angle_beta -> setText(QString::number(beta));
     }
     else
     {
@@ -926,6 +941,7 @@ void MainWindow::updateData(QString s)
                 }
             }
         }
+        altBar = alt;
         double vbat = double(vbatRaw) / 10.0;
         int prs = prsRaw / 1000;
         if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5] && !damaged[6])
