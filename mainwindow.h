@@ -99,8 +99,8 @@ private:
     int pngCounter = 0;
     int pngCounter2 = 0;
 
-    double latStation = 62.03389;
-    double lonStation = 129.73306;
+    double latStation = 0;
+    double lonStation = 0;
     double altStation = 95;
     double altBar = 0;
     double altGPS = 0;

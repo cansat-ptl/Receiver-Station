@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QtCharts>
 #include <QtGui/QMouseEvent>
+#include <QSettings>
+#include <QVariant>
 
 ChartView::ChartView(QChart *chart, QWidget *parent) :
     QChartView(chart, parent),
@@ -264,9 +266,20 @@ MainWindow::MainWindow(QWidget *parent) :
     pGPS.setColor(QPalette::Text, Qt::green);
     ui -> gps_terminal -> setPalette(pGPS);
 
+
     // COM port settings
-    QString portNameR = QInputDialog::getText(this, "Please fill", "Receiver COM port name:", QLineEdit::Normal);
-    QString baudRateR = QInputDialog::getText(this, "Please fill", "Receiver baud rate", QLineEdit::Normal);
+
+    QString portNameR , baudRateR;
+    QSettings sett("settings.ini", QSettings::IniFormat);
+    sett.beginGroup("MAIN");
+    portNameR = sett.value("COM_NAME", "COM7").toString();
+    baudRateR = sett.value("BAUD_RATE", "9600").toString();
+    latStation = sett.value("STATION_LATITUDE","62.03389").toDouble();
+    lonStation = sett.value("SATTION_LONGITUDE","129.73306").toDouble();
+    sett.endGroup();
+
+    qDebug() << portNameR << baudRateR << latStation << lonStation;
+
     receiver = new QSerialPort(this); // creating a object of receiver using as radio input
     serialBuffer = ""; // buffer for data packets
     parsed_data = ""; // handled version of data packets
@@ -279,7 +292,6 @@ MainWindow::MainWindow(QWidget *parent) :
     receiver -> setParity(QSerialPort::NoParity);
     receiver -> setStopBits(QSerialPort::OneStop);
     receiver -> flush();
-
     QObject::connect(receiver, SIGNAL(readyRead()), this, SLOT(readSerial()));
 
 }
@@ -321,7 +333,6 @@ void MainWindow::readSerial()
     }
 }
 
-
 // Updating data on UI
 void MainWindow::updateData(QString s)
 {
@@ -362,7 +373,7 @@ void MainWindow::updateData(QString s)
                     {
                         temp += s[i + 1];
                         i++;
-                        if (i > l)
+                        if (temp.length() > 10)
                         {
                             damaged[0] = true;
                             break;
@@ -382,7 +393,7 @@ void MainWindow::updateData(QString s)
                         {
                             temp += s[i + 1];
                             i++;
-                            if (i > l)
+                            if (temp.length() > 10)
                             {
                                 damaged[1] = true;
                                 break;
@@ -403,7 +414,7 @@ void MainWindow::updateData(QString s)
                         {
                             temp += s[i + 1];
                             i++;
-                            if (i > l)
+                            if (temp.length() > 10)
                             {
                                 damaged[2] = true;
                                 break;
@@ -424,7 +435,7 @@ void MainWindow::updateData(QString s)
                         {
                             temp += s[i + 1];
                             i++;
-                            if (i > l)
+                            if (temp.length() > 10)
                             {
                                 damaged[3] = true;
                                 break;
@@ -445,7 +456,7 @@ void MainWindow::updateData(QString s)
                         {
                             temp += s[i + 1];
                             i++;
-                            if (i > l)
+                            if (temp.length() > 10)
                             {
                                 damaged[4] = true;
                                 break;
@@ -585,7 +596,7 @@ void MainWindow::updateData(QString s)
                             {
                                 temp += s[i + 1];
                                 i++;
-                                if (i > l)
+                                if (temp.length() > 10)
                                 {
                                     damaged[0] = true;
                                     break;
@@ -606,7 +617,7 @@ void MainWindow::updateData(QString s)
                             {
                                 temp += s[i + 1];
                                 i++;
-                                if (i > l)
+                                if (temp.length() > 10)
                                 {
                                     damaged[1] = true;
                                     break;
@@ -629,7 +640,7 @@ void MainWindow::updateData(QString s)
                                 {
                                     temp += s[i + 1];
                                     i++;
-                                    if (i > l)
+                                    if (temp.length() > 10)
                                     {
                                         damaged[2] = true;
                                         break;
@@ -653,7 +664,7 @@ void MainWindow::updateData(QString s)
                                 {
                                     temp += s[i + 1];
                                     i++;
-                                    if (i > l)
+                                    if (temp.length() > 20)
                                     {
                                         damaged[3] = true;
                                         break;
@@ -677,7 +688,7 @@ void MainWindow::updateData(QString s)
                                 {
                                     temp += s[i + 1];
                                     i++;
-                                    if (i > l)
+                                    if (temp.length() > 20)
                                     {
                                         damaged[4] = true;
                                         break;
@@ -701,7 +712,7 @@ void MainWindow::updateData(QString s)
                                 {
                                     temp += s[i + 1];
                                     i++;
-                                    if (i > l)
+                                    if (temp.length() > 10)
                                     {
                                         damaged[5] = true;
                                         break;
@@ -777,9 +788,10 @@ void MainWindow::updateData(QString s)
             ui -> angle_alpha -> setText(QString::number(alpha));
             ui -> angle_beta -> setText(QString::number(beta));
     }
-    else
+    else if (type == "MAIN")
     {
         int n = 0, et = 0, vbatRaw = 0, alt = 0, prsRaw = 0, t1 = 0, t2 = 0, i = 0;
+        qDebug() << s;
         bool damaged[7] = {false};
         temp = "";
         for (i = 0; i < l; i++)
@@ -792,7 +804,7 @@ void MainWindow::updateData(QString s)
                     {
                         temp += s[i + 1];
                         i++;
-                        if (i > l)
+                        if (temp.length() > 10)
                         {
                             damaged[0] = true;
                             break;
@@ -812,7 +824,7 @@ void MainWindow::updateData(QString s)
                         {
                             temp += s[i + 1];
                             i++;
-                            if (i > l)
+                            if (temp.length() > 10)
                             {
                                 damaged[1] = true;
                                 break;
@@ -837,7 +849,7 @@ void MainWindow::updateData(QString s)
                                 {
                                     temp += s[i + 1];
                                     i++;
-                                    if (i > l)
+                                    if (temp.length() > 10)
                                     {
                                         damaged[2] = true;
                                         break;
@@ -862,7 +874,7 @@ void MainWindow::updateData(QString s)
                             {
                                 temp += s[i + 1];
                                 i++;
-                                if (i > l)
+                                if (temp.length() > 10)
                                 {
                                     damaged[3] = true;
                                     break;
@@ -886,7 +898,7 @@ void MainWindow::updateData(QString s)
                             {
                                 temp += s[i + 1];
                                 i++;
-                                if (i > l)
+                                if (temp.length() > 10)
                                 {
                                     damaged[4] = true;
                                     break;
@@ -908,7 +920,7 @@ void MainWindow::updateData(QString s)
                         {
                             temp += s[i + 1];
                             i++;
-                            if (i > l)
+                            if (temp.length() > 10)
                             {
                                 damaged[5] = true;
                                 break;
@@ -929,7 +941,7 @@ void MainWindow::updateData(QString s)
                         {
                             temp += s[i + 1];
                             i++;
-                            if (i > l)
+                            if (temp.length() > 10)
                             {
                                 damaged[6] = true;
                                 break;
