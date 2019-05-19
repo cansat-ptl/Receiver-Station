@@ -137,6 +137,8 @@ MainWindow::MainWindow(QWidget *parent) :
     axisY_alt = new QValueAxis; // creating a QValueAxis class for Y axis of altitude chart
     axisY_alt -> setLabelFormat("%i"); // setting a value axis label format
     axisY_alt -> setTitleText("Meters"); // title of value axis
+    axisY_alt -> setMax(0);
+    axisY_alt -> setMin(0);
     chart_alt -> addAxis(axisY_alt, Qt::AlignLeft); // connecting QLineSeries container with Y value axis
     series_alt -> attachAxis(axisY_alt);  // connecting QLineSeries container with Y value axis
 
@@ -154,6 +156,8 @@ MainWindow::MainWindow(QWidget *parent) :
     axisY_prs = new QValueAxis; // creating a QValueAxis class for Y axis of pressure chart
     axisY_prs -> setLabelFormat("%i"); // setting a value axis label format
     axisY_prs -> setTitleText("kPa"); // title of value axis
+    axisY_prs -> setMax(0);
+    axisY_prs -> setMin(0);
     chart_prs -> addAxis(axisY_prs, Qt::AlignLeft); // connecting QLineSeries container with X value axis
     series_prs -> attachAxis(axisY_prs); // connecting QLineSeries container with X value axis
 
@@ -172,6 +176,8 @@ MainWindow::MainWindow(QWidget *parent) :
     axisY_t2 = new QValueAxis;
     axisY_t2 -> setLabelFormat("%i");
     axisY_t2 -> setTitleText("°С");
+    axisY_t2 -> setMax(0);
+    axisY_t2 -> setMin(0);
     chart_t2 -> addAxis(axisY_t2, Qt::AlignLeft);
     series_t2 -> attachAxis(axisY_t2);
 
@@ -190,6 +196,8 @@ MainWindow::MainWindow(QWidget *parent) :
     axisY_vbat = new QValueAxis;
     axisY_vbat -> setLabelFormat("%.2f");
     axisY_vbat -> setTitleText("Volts");
+    axisY_vbat -> setMax(0);
+    axisY_vbat -> setMin(0);
     chart_vbat -> addAxis(axisY_vbat, Qt::AlignLeft);
     series_vbat -> attachAxis(axisY_vbat);
 
@@ -208,6 +216,8 @@ MainWindow::MainWindow(QWidget *parent) :
     axisY_ax = new QValueAxis;
     axisY_ax -> setLabelFormat("%.2f");
     axisY_ax -> setTitleText("m/s²");
+    axisY_ax -> setMax(0);
+    axisY_ax -> setMin(0);
     chart_ax -> addAxis(axisY_ax, Qt::AlignLeft);
     series_ax -> attachAxis(axisY_ax);
 
@@ -226,6 +236,8 @@ MainWindow::MainWindow(QWidget *parent) :
     axisY_ay = new QValueAxis;
     axisY_ay -> setLabelFormat("%.2f");
     axisY_ay -> setTitleText("m/s²");
+    axisY_ay -> setMax(0);
+    axisY_ay -> setMin(0);
     chart_ay -> addAxis(axisY_ay, Qt::AlignLeft);
     series_ay -> attachAxis(axisY_ay);
 
@@ -244,6 +256,8 @@ MainWindow::MainWindow(QWidget *parent) :
     axisY_az = new QValueAxis;
     axisY_az -> setLabelFormat("%.2f");
     axisY_az -> setTitleText("m/s²");
+    axisY_az -> setMax(0);
+    axisY_az -> setMin(0);
     chart_az -> addAxis(axisY_az, Qt::AlignLeft);
     series_az -> attachAxis(axisY_az);
 
@@ -545,6 +559,11 @@ void MainWindow::updateData(QString s)
                 axMin = ax;
                 axisY_ax -> setMin(axMin);
             }
+            if (((ax > axMax - 0.001) && (ax < axMax + 0.001)) || ((az > azMin - 0.001) && (az < azMin + 0.001)))
+            {
+                axisY_ax -> setMin(-160.0);
+                axisY_ax -> setMax(ax);
+            }
             series_ax -> append(et , ax);
         }
 
@@ -560,6 +579,11 @@ void MainWindow::updateData(QString s)
                 ayMin = ay;
                 axisY_ay -> setMin(ayMin);
             }
+            if (((ay > ayMax - 0.001) && (ay < ayMax + 0.001)) || ((az > azMin - 0.001) && (az < azMin + 0.001)))
+            {
+                axisY_ay -> setMin(-160.0);
+                axisY_ay -> setMax(ay);
+            }
             series_ay -> append(et , ay);
         }
 
@@ -574,6 +598,11 @@ void MainWindow::updateData(QString s)
             {
                 azMin = az;
                 axisY_az -> setMin(azMin);
+            }
+            if (((az > azMax - 0.001) && (az < azMax + 0.001)) || ((az > azMin - 0.001) && (az < azMin + 0.001)))
+            {
+                axisY_az -> setMin(-160);
+                axisY_az -> setMax(az);
             }
             series_az -> append(et , az);
         }
@@ -956,6 +985,7 @@ void MainWindow::updateData(QString s)
         altBar = alt;
         double vbat = double(vbatRaw) / 10.0;
         int prs = prsRaw / 1000;
+        qDebug() << damaged[0] << damaged[1] <<  damaged[2] <<  damaged[3] <<  damaged[4] <<  damaged[5] <<  damaged[6];
         if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5] && !damaged[6])
         {
             ui -> statusBar -> showMessage("Главный пакет №" + QString::number(n) + " получен удачно.");
@@ -1045,6 +1075,11 @@ void MainWindow::updateData(QString s)
                 altMin = alt;
                 axisY_alt -> setMin(altMin);
             }
+            if (alt == altMax || alt == altMin)
+            {
+                axisY_alt -> setMin(0);
+                axisY_alt -> setMax(alt);
+            }
             series_alt -> append(et , alt);
         }
 
@@ -1059,6 +1094,11 @@ void MainWindow::updateData(QString s)
             {
                 prsMin = prs;
                 axisY_prs -> setMin(prsMin);
+            }
+            if (prs == prsMax || prs == prsMin)
+            {
+                axisY_prs -> setMin(0);
+                axisY_prs -> setMax(prs);
             }
             series_prs -> append(et , prs);
         }
@@ -1075,6 +1115,11 @@ void MainWindow::updateData(QString s)
                 t2Min = t2;
                 axisY_t2 -> setMin(t2Min);
             }
+            if (t2 == t2Max || t2 == t2Min)
+            {
+                axisY_t2 -> setMax(t2);
+                axisY_t2 -> setMin(0);
+            }
             series_t2 -> append(et , t2);
         }
 
@@ -1089,6 +1134,11 @@ void MainWindow::updateData(QString s)
             {
                 vbatMin = vbat;
                 axisY_vbat -> setMin(vbatMin);
+            }
+            if (((vbat > vbatMax - 0.001) && (vbat < vbatMax + 0.001)) || ((vbat > vbatMin - 0.001) && (vbat < vbatMin + 0.001)))
+            {
+                axisY_vbat -> setMin(0.0);
+                axisY_vbat -> setMax(vbat);
             }
             series_vbat -> append(et , vbat);
         }
