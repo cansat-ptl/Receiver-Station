@@ -488,12 +488,12 @@ void MainWindow::updateData(QString s)
         if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4])
         {
             ui -> statusBar -> showMessage("Пакет ориентации №" + QString::number(n) + " получен удачно");
-            ui -> orient_terminal -> append(s + "\t OK");
+            ui -> orient_terminal -> append(s.trimmed() + "\t OK");
         }
         else
         {
             ui -> statusBar -> showMessage("Последний пакет принят с повреждениями, данные могут быть неточны");
-            ui -> orient_terminal -> append(s + "\t DAMAGED");
+            ui -> orient_terminal -> append(s.trimmed() + "\t DAMAGED");
         }
 
         QFile dataOrient(".\\CSVs\\data_orient.csv");
@@ -551,18 +551,13 @@ void MainWindow::updateData(QString s)
         {
             if (ax > axMax)
             {
-                axMax = ax;
-                axisY_ax -> setMax(axMax);
+                axMax = ax + 1;
+                axisY_ax -> setMax(axMax + 1);
             }
             if (ax< axMin)
             {
-                axMin = ax;
-                axisY_ax -> setMin(axMin);
-            }
-            if (((ax > axMax - 0.001) && (ax < axMax + 0.001)) || ((az > azMin - 0.001) && (az < azMin + 0.001)))
-            {
-                axisY_ax -> setMin(-160.0);
-                axisY_ax -> setMax(ax);
+                axMin = ax - 1;
+                axisY_ax -> setMin(axMin - 1);
             }
             series_ax -> append(et , ax);
         }
@@ -571,18 +566,13 @@ void MainWindow::updateData(QString s)
         {
             if (ay > ayMax)
             {
-                ayMax = ay;
-                axisY_ay -> setMax(ayMax);
+                ayMax = ay + 1;
+                axisY_ay -> setMax(ayMax + 1);
             }
             if (ay < ayMin)
             {
-                ayMin = ay;
-                axisY_ay -> setMin(ayMin);
-            }
-            if (((ay > ayMax - 0.001) && (ay < ayMax + 0.001)) || ((az > azMin - 0.001) && (az < azMin + 0.001)))
-            {
-                axisY_ay -> setMin(-160.0);
-                axisY_ay -> setMax(ay);
+                ayMin = ay - 1;
+                axisY_ay -> setMin(ayMin - 1);
             }
             series_ay -> append(et , ay);
         }
@@ -591,18 +581,13 @@ void MainWindow::updateData(QString s)
         {
             if (az > azMax)
             {
-                azMax = az;
-                axisY_az -> setMax(azMax);
+                azMax = az + 1;
+                axisY_az -> setMax(azMax - 1);
             }
             if (az < azMin)
             {
-                azMin = az;
-                axisY_az -> setMin(azMin);
-            }
-            if (((az > azMax - 0.001) && (az < azMax + 0.001)) || ((az > azMin - 0.001) && (az < azMin + 0.001)))
-            {
-                axisY_az -> setMin(-160);
-                axisY_az -> setMax(az);
+                azMin = az + 1;
+                axisY_az -> setMin(azMin - 1);
             }
             series_az -> append(et , az);
         }
@@ -759,12 +744,12 @@ void MainWindow::updateData(QString s)
             if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5])
             {
                 ui -> statusBar -> showMessage("Пакет ориентации №" + QString::number(n) + " получен удачно.");
-                ui -> gps_terminal -> append(s + "\t OK");
+                ui -> gps_terminal -> append(s.trimmed() + "\t OK");
             }
             else
             {
                 ui -> statusBar -> showMessage("Последний пакет принят с повреждениями, данные могут быть неточны");
-                ui -> gps_terminal -> append(s + "\t OK");
+                ui -> gps_terminal -> append(s.trimmed() + "\t OK");
             }
             QFile dataGPS(".\\CSVs\\data_gps.csv");
             dataGPS.open(QFile::WriteOnly|QFile::Append);
@@ -985,16 +970,15 @@ void MainWindow::updateData(QString s)
         altBar = alt;
         double vbat = double(vbatRaw) / 10.0;
         int prs = prsRaw / 1000;
-        qDebug() << damaged[0] << damaged[1] <<  damaged[2] <<  damaged[3] <<  damaged[4] <<  damaged[5] <<  damaged[6];
         if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5] && !damaged[6])
         {
             ui -> statusBar -> showMessage("Главный пакет №" + QString::number(n) + " получен удачно.");
-            ui -> main_terminal -> append(s + "\t OK");
+            ui -> main_terminal -> append( s.trimmed() + "\t OK");
         }
         else
         {
             ui -> statusBar -> showMessage("Последний пакет принят с повреждениями, данные могут быть неточны");
-            ui -> main_terminal -> append(s + "\t OK");
+            ui -> main_terminal -> append(s.trimmed() + "\t DAMAGED");
         }
         QFile dataMain(".\\CSVs\\data_main.csv");
         dataMain.open(QFile::WriteOnly|QFile::Append);
@@ -1067,18 +1051,13 @@ void MainWindow::updateData(QString s)
         {
             if (alt > altMax)
             {
-                altMax = alt;
-                axisY_alt -> setMax(altMax);
+                altMax = alt + 1;
+                axisY_alt -> setMax(altMax + 1);
             }
             if (alt < altMin)
             {
-                altMin = alt;
-                axisY_alt -> setMin(altMin);
-            }
-            if (alt == altMax || alt == altMin)
-            {
-                axisY_alt -> setMin(0);
-                axisY_alt -> setMax(alt);
+                altMin = alt - 1;
+                axisY_alt -> setMin(altMin - 1);
             }
             series_alt -> append(et , alt);
         }
@@ -1087,18 +1066,13 @@ void MainWindow::updateData(QString s)
         {
             if (prs > prsMax)
             {
-                prsMax = prs;
-                axisY_prs -> setMax(prsMax);
+                prsMax = prs + 1;
+                axisY_prs -> setMax(prsMax + 1);
             }
             if (prs < prsMin)
             {
-                prsMin = prs;
-                axisY_prs -> setMin(prsMin);
-            }
-            if (prs == prsMax || prs == prsMin)
-            {
-                axisY_prs -> setMin(50);
-                axisY_prs -> setMax(prs);
+                prsMin = prs - 1;
+                axisY_prs -> setMin(prsMin - 1);
             }
             series_prs -> append(et , prs);
         }
@@ -1107,18 +1081,13 @@ void MainWindow::updateData(QString s)
         {
             if (t2 > t2Max)
             {
-                t2Max = t2;
-                axisY_t2 -> setMax(t2Max);
+                t2Max = t2 + 1;
+                axisY_t2 -> setMax(t2Max + 1);
             }
             if (t2 < t2Min)
             {
-                t2Min = t2;
-                axisY_t2 -> setMin(t2Min);
-            }
-            if (t2 == t2Max || t2 == t2Min)
-            {
-                axisY_t2 -> setMax(t2);
-                axisY_t2 -> setMin(0);
+                t2Min = t2 - 1;
+                axisY_t2 -> setMin(t2Min - 1);
             }
             series_t2 -> append(et , t2);
         }
@@ -1127,18 +1096,13 @@ void MainWindow::updateData(QString s)
         {
             if (vbat > vbatMax)
             {
-                vbatMax = vbat;
-                axisY_vbat -> setMax(vbatMax);
+                vbatMax = vbat + 1;
+                axisY_vbat -> setMax(vbatMax + 1);
             }
             if (vbat < vbatMin)
             {
-                vbatMin = vbat;
-                axisY_vbat -> setMin(vbatMin);
-            }
-            if (((vbat > vbatMax - 0.001) && (vbat < vbatMax + 0.001)) || ((vbat > vbatMin - 0.001) && (vbat < vbatMin + 0.001)))
-            {
-                axisY_vbat -> setMin(6.0);
-                axisY_vbat -> setMax(vbat);
+                vbatMin = vbat - 1;
+                axisY_vbat -> setMin(vbatMin - 1);
             }
             series_vbat -> append(et , vbat);
         }

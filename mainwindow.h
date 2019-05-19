@@ -108,16 +108,16 @@ private:
     int prsMax = -1;
     int t2Max = -1;
     double vbatMax = -1;
-    int altMin = INT_MAX;
-    int prsMin = INT_MAX;
-    int t2Min = INT_MAX;
-    double vbatMin = 999999;
+    int altMin = 9999999;
+    int prsMin = 9999999;
+    int t2Min = 9999999;
+    double vbatMin = 9999999;
     double axMax = -1;
-    double axMin = 999999;
+    double axMin = 9999999;
     double ayMax = -1;
-    double ayMin = 999999;
+    double ayMin = 9999999;
     double azMax = -1;
-    double azMin = 999999;
+    double azMin = 9999999;
     int etMin1 = 0;
     int etMin2 = 0;
 
