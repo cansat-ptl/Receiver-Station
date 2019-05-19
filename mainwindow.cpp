@@ -1097,7 +1097,7 @@ void MainWindow::updateData(QString s)
             }
             if (prs == prsMax || prs == prsMin)
             {
-                axisY_prs -> setMin(0);
+                axisY_prs -> setMin(50);
                 axisY_prs -> setMax(prs);
             }
             series_prs -> append(et , prs);
@@ -1137,7 +1137,7 @@ void MainWindow::updateData(QString s)
             }
             if (((vbat > vbatMax - 0.001) && (vbat < vbatMax + 0.001)) || ((vbat > vbatMin - 0.001) && (vbat < vbatMin + 0.001)))
             {
-                axisY_vbat -> setMin(0.0);
+                axisY_vbat -> setMin(6.0);
                 axisY_vbat -> setMax(vbat);
             }
             series_vbat -> append(et , vbat);
