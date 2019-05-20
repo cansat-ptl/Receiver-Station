@@ -582,11 +582,11 @@ void MainWindow::updateData(QString s)
             if (az > azMax)
             {
                 azMax = az + 1;
-                axisY_az -> setMax(azMax - 1);
+                axisY_az -> setMax(azMax + 1);
             }
             if (az < azMin)
             {
-                azMin = az + 1;
+                azMin = az - 1;
                 axisY_az -> setMin(azMin - 1);
             }
             series_az -> append(et , az);
