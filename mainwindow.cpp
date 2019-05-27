@@ -612,7 +612,7 @@ void MainWindow::updateData(QString s)
     }
     else if (type == "GPS")
     {
-        int i = 0, n = 0, et = 0, altRaw = 0, sat = 0;
+        int i = 0, n = 0, et = 0, alt = 0, sat = 0;
         double lat = 0, lon = 0;
         temp = "";
         bool damaged[6] = {false};
@@ -750,14 +750,13 @@ void MainWindow::updateData(QString s)
                                         break;
                                     }
                                 }
-                                altRaw = temp.toInt();
+                                alt = temp.toInt();
                                 temp = "";
                             }
                         }
                     }
                 }
             }
-            double alt = altRaw / 10;
             altGPS = alt;
             if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5])
             {
@@ -825,8 +824,7 @@ void MainWindow::updateData(QString s)
     }
     else if (type == "MAIN")
     {
-        int n = 0, et = 0, vbatRaw = 0, alt = 0, prsRaw = 0, t1 = 0, t2 = 0, i = 0;
-        qDebug() << s;
+        int n = 0, et = 0, vbatRaw = 0, altRaw = 0, prsRaw = 0, t1Raw = 0, t2Raw = 0, i = 0;
         bool damaged[7] = {false};
         temp = "";
         for (i = 0; i < l; i++)
@@ -915,7 +913,7 @@ void MainWindow::updateData(QString s)
                                     break;
                                 }
                             }
-                            alt = temp.toInt();
+                            altRaw = temp.toInt();
                             temp = "";
                         }
                     }
@@ -961,7 +959,7 @@ void MainWindow::updateData(QString s)
                                 break;
                             }
                         }
-                        t1 = temp.toInt();
+                        t1Raw = temp.toInt();
                         temp = "";
                     }
                 }
@@ -982,15 +980,16 @@ void MainWindow::updateData(QString s)
                                 break;
                             }
                         }
-                        t2 = temp.toInt();
+                        t2Raw = temp.toInt();
                         temp = "";
                     }
                 }
             }
         }
+        double alt = double(altRaw)/10.0, t1 = double(t1Raw)/10.0, t2 = double(t2Raw)/10.0;
         altBar = alt;
         double vbat = double(vbatRaw) / 10.0;
-        int prs = prsRaw / 1000;
+        int prs = double(prsRaw) / 10000;
         if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5] && !damaged[6])
         {
             ui -> statusBar -> showMessage("Главный пакет №" + QString::number(n) + " получен удачно.");
