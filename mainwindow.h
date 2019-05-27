@@ -46,6 +46,7 @@ private slots:
     void updateData(QString);
     void on_pngbutton1_clicked();
     void on_pngbutton2_clicked();
+    void writeToTerminal(QString);
 
 
     void on_reconnectButtonR_clicked();
@@ -53,6 +54,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QSerialPort *receiver;
+    QSerialPort *antenna;
     QByteArray serialData;
     QString serialBuffer;
     QString parsed_data;

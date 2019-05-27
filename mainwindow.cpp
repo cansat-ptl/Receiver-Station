@@ -283,16 +283,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // COM port settings
 
-    QString portNameR , baudRateR;
+    QString portNameR , baudRateR , portNameA, baudRateA;
     QSettings sett("settings.ini", QSettings::IniFormat);
     sett.beginGroup("MAIN");
-    portNameR = sett.value("COM_NAME", "COM7").toString();
-    baudRateR = sett.value("BAUD_RATE", "9600").toString();
-    latStation = sett.value("STATION_LATITUDE","62.03389").toDouble();
-    lonStation = sett.value("SATTION_LONGITUDE","129.73306").toDouble();
+    portNameR = sett.value("COM_NAME_R", "COM7").toString();
+    baudRateR = sett.value("BAUD_RATE_R", "9600").toString();
+    latStation = sett.value("STATION_LATITUDE", "62.03389").toDouble();
+    lonStation = sett.value("STATION_LONGITUDE", "129.73306").toDouble();
+    portNameA = sett.value("COM_NAME_A", "COM3").toString();
+    baudRateA = sett.value("BAUD_RATE_A", "9600").toString();
     sett.endGroup();
-
-    qDebug() << portNameR << baudRateR << latStation << lonStation;
 
     receiver = new QSerialPort(this); // creating a object of receiver using as radio input
     serialBuffer = ""; // buffer for data packets
@@ -307,6 +307,17 @@ MainWindow::MainWindow(QWidget *parent) :
     receiver -> setStopBits(QSerialPort::OneStop);
     receiver -> flush();
     QObject::connect(receiver, SIGNAL(readyRead()), this, SLOT(readSerial()));
+
+    antenna = new QSerialPort(this);
+
+    antenna -> setPortName(portNameA);
+    antenna -> open(QSerialPort::WriteOnly);
+    antenna -> setBaudRate(baudRateA.toInt());
+    antenna -> setDataBits(QSerialPort::Data8);
+    antenna -> setFlowControl(QSerialPort::NoFlowControl);
+    antenna -> setParity(QSerialPort::NoParity);
+    antenna -> setStopBits(QSerialPort::OneStop);
+    antenna -> flush();
 
 }
 
@@ -345,6 +356,13 @@ void MainWindow::readSerial()
         dataPackets.close();
         MainWindow::updateData(parsed_data);
     }
+}
+
+void MainWindow::writeToTerminal(QString angles)
+{
+    angles.append( "\r");
+    QByteArray ba = angles.toLatin1();
+    antenna->write(ba);
 }
 
 // Updating data on UI
@@ -801,6 +819,9 @@ void MainWindow::updateData(QString s)
             double beta = atan(abs(z2 - z1) / hypot) * 180/M_PI;
             ui -> angle_alpha -> setText(QString::number(alpha));
             ui -> angle_beta -> setText(QString::number(beta));
+            int rndAlpha = int(alpha);
+            int rndBeta = int(beta);
+            writeToTerminal("A=" + QString::number(rndAlpha) + ";" + "B=" + QString::number(rndBeta) + ";");
     }
     else if (type == "MAIN")
     {
