@@ -103,7 +103,7 @@ private:
 
     double latStation = 0;
     double lonStation = 0;
-    double altStation = 95;
+    double altStation = 0;
     double altBar = 0;
     double altGPS = 0;
     double altMax = -1;

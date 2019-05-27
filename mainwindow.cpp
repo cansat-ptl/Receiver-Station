@@ -290,6 +290,7 @@ MainWindow::MainWindow(QWidget *parent) :
     baudRateR = sett.value("BAUD_RATE_R", "9600").toString();
     latStation = sett.value("STATION_LATITUDE", "62.03389").toDouble();
     lonStation = sett.value("STATION_LONGITUDE", "129.73306").toDouble();
+    altStation = sett.value("STATION_ALTITUDE","85").toDouble();
     portNameA = sett.value("COM_NAME_A", "COM3").toString();
     baudRateA = sett.value("BAUD_RATE_A", "9600").toString();
     sett.endGroup();
