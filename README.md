@@ -6,7 +6,7 @@ Realised features: draw charts of data from data packets(zoomable, scrollable, a
 Coming soon: realtime offline map with pointer of CanSat by GPS data
 
 # How to use:
-1) Run test.exe (from release-tester) write down your COM port name and settings. Example: "COM3" , "Baudrate: 9600" , etc.
+1) Run test.exe (from "test" folder), look for your COM port name and its baud rate. Example: "COM3" , "Baudrate: 9600" , etc.
 2) Open settings.ini and fill all fields.
 2) Run Station.exe, wait for first packet to be handled.
 3) enjoy! don't waste your time , create things, happy coding.
