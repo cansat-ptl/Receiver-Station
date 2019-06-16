@@ -806,13 +806,14 @@ void MainWindow::updateData(QString s)
             dataGPS.close();
 
             // Calculating antenna angles
-            double r = 6371200.0;
-            double x1 = r * cos(lat) * cos(lon);
-            double y1 = r * cos(lat) * sin(lon);
-            double z1 = alt;
-            double x2 = r * cos(latStation) * cos(lonStation);
-            double y2 = r * cos(latStation) * sin(lonStation);
-            double z2 = altStation;
+            double r1 = 6371200.0 + alt;
+            double x1 = r1 * cos(lat) * cos(lon);
+            double y1 = r1 * cos(lat) * sin(lon);
+            double z1 = r1 * sin(lat);
+            double r2 = 6371200.0 + altStation;
+            double x2 = r2 * cos(latStation) * cos(lonStation);
+            double y2 = r2 * cos(latStation) * sin(lonStation);
+            double z2 = r2 * sin(latStation);
             double alpha = atan(abs(y2 - y1) / abs(x2 - x1)) * 180/M_PI;
             double hypot = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
             double beta = atan(abs(z2 - z1) / hypot) * 180/M_PI;
