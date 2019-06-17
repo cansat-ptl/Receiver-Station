@@ -46,8 +46,6 @@ void ChartView::mouseReleaseEvent(QMouseEvent *event)
     if (m_isTouching)
         m_isTouching = false;
 
-    // Because we disabled animations when touch event was detected
-    // we must put them back on.
     chart()->setAnimationOptions(QChart::SeriesAnimations);
 
     QChartView::mouseReleaseEvent(event);
@@ -86,7 +84,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui -> setupUi(this);
 
-    // Creating charts for altitude, pressure, outside temperature (t2) and battery voltage (vbat)
+    QMainWindow::showFullScreen();
+
     chart_alt = new QChart;
     chart_prs = new QChart;
     chart_t2 = new QChart;
@@ -111,8 +110,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui -> orientLayout -> addWidget(chartview_ay);
     ui -> orientLayout -> addWidget(chartview_az);
 
-
-    // Creating QLineSeries containers for charts
     series_alt = new QLineSeries;
     series_prs = new QLineSeries;
     series_t2 = new QLineSeries;
@@ -121,52 +118,46 @@ MainWindow::MainWindow(QWidget *parent) :
     series_ay = new QLineSeries;
     series_az = new QLineSeries;
 
-    // ui -> xyzchart -> setChart(chart_xyz);
+    chart_alt -> legend() -> hide();
+    chart_alt -> addSeries(series_alt);
+    chart_alt -> setTitle("Altitude chart");
 
-    // Altitude chart setting
-    chart_alt -> legend() -> hide(); // hide legend
-    chart_alt -> addSeries(series_alt); // connecting with QLineSeries
-    chart_alt -> setTitle("Altitude chart"); // title of chart
-    // Altitude chart axis setting
-    axisX_alt = new QValueAxis; // creating a QValueAxis class for X axis of altitude chart
-    axisX_alt -> setLabelFormat("%i"); // setting a value axis label format
-    axisX_alt -> setTitleText("Seconds"); // title of value axis
-    chart_alt -> addAxis(axisX_alt, Qt::AlignBottom); // connecting X value axis with altitude chart
-    series_alt -> attachAxis(axisX_alt); // connecting QLineSeries container with X value axis
+    axisX_alt = new QValueAxis;
+    axisX_alt -> setLabelFormat("%i");
+    axisX_alt -> setTitleText("Seconds");
+    chart_alt -> addAxis(axisX_alt, Qt::AlignBottom);
+    series_alt -> attachAxis(axisX_alt);
 
-    axisY_alt = new QValueAxis; // creating a QValueAxis class for Y axis of altitude chart
-    axisY_alt -> setLabelFormat("%i"); // setting a value axis label format
-    axisY_alt -> setTitleText("Meters"); // title of value axis
+    axisY_alt = new QValueAxis;
+    axisY_alt -> setLabelFormat("%i");
+    axisY_alt -> setTitleText("Meters");
     axisY_alt -> setMax(0);
     axisY_alt -> setMin(0);
-    chart_alt -> addAxis(axisY_alt, Qt::AlignLeft); // connecting QLineSeries container with Y value axis
-    series_alt -> attachAxis(axisY_alt);  // connecting QLineSeries container with Y value axis
+    chart_alt -> addAxis(axisY_alt, Qt::AlignLeft);
+    series_alt -> attachAxis(axisY_alt);
 
-    // Pressure chart setting
-    chart_prs -> legend() -> hide(); // hide legend
-    chart_prs -> addSeries(series_prs); // connecting with QLineSeries
-    chart_prs -> setTitle("Pressure chart"); // title of chart
-    // Pressure chart axis setting
-    axisX_prs = new QValueAxis; // creating a QValueAxis class for X axis of pressure chart
-    axisX_prs -> setLabelFormat("%i"); // setting a value axis label format
-    axisX_prs -> setTitleText("Seconds"); // title of value axis
-    chart_prs -> addAxis(axisX_prs, Qt::AlignBottom); // connecting X value axis with pressure chart
-    series_prs -> attachAxis(axisX_prs); // connecting QLineSeries container with X value axis
+    chart_prs -> legend() -> hide();
+    chart_prs -> addSeries(series_prs);
+    chart_prs -> setTitle("Pressure chart");
 
-    axisY_prs = new QValueAxis; // creating a QValueAxis class for Y axis of pressure chart
-    axisY_prs -> setLabelFormat("%i"); // setting a value axis label format
-    axisY_prs -> setTitleText("kPa"); // title of value axis
+    axisX_prs = new QValueAxis;
+    axisX_prs -> setLabelFormat("%i");
+    axisX_prs -> setTitleText("Seconds");
+    chart_prs -> addAxis(axisX_prs, Qt::AlignBottom);
+    series_prs -> attachAxis(axisX_prs);
+
+    axisY_prs = new QValueAxis;
+    axisY_prs -> setLabelFormat("%i");
+    axisY_prs -> setTitleText("kPa");
     axisY_prs -> setMax(0);
     axisY_prs -> setMin(0);
-    chart_prs -> addAxis(axisY_prs, Qt::AlignLeft); // connecting QLineSeries container with X value axis
-    series_prs -> attachAxis(axisY_prs); // connecting QLineSeries container with X value axis
+    chart_prs -> addAxis(axisY_prs, Qt::AlignLeft);
+    series_prs -> attachAxis(axisY_prs);
 
-    // Next charts have absolutely same settings
-    // Outside temperature chart setting
     chart_t2 -> legend() -> hide();
     chart_t2 -> addSeries(series_t2);
     chart_t2 -> setTitle("Outside temperature chart");
-    // Outside temperature chart axis setting
+
     axisX_t2 = new QValueAxis;
     axisX_t2 -> setLabelFormat("%i");
     axisX_t2 -> setTitleText("Seconds");
@@ -181,11 +172,10 @@ MainWindow::MainWindow(QWidget *parent) :
     chart_t2 -> addAxis(axisY_t2, Qt::AlignLeft);
     series_t2 -> attachAxis(axisY_t2);
 
-    // Battery voltage chart setting
     chart_vbat -> legend() -> hide();
     chart_vbat -> addSeries(series_vbat);
     chart_vbat -> setTitle("Battery voltage chart");
-    // Battery voltage chart axis setting
+
     axisX_vbat = new QValueAxis;
     axisX_vbat -> setLabelFormat("%i");
     axisX_vbat -> setTickCount(1);
@@ -201,11 +191,10 @@ MainWindow::MainWindow(QWidget *parent) :
     chart_vbat -> addAxis(axisY_vbat, Qt::AlignLeft);
     series_vbat -> attachAxis(axisY_vbat);
 
-    //AX chart setting
     chart_ax -> legend() -> hide();
     chart_ax -> addSeries(series_ax);
     chart_ax -> setTitle("Acceleration by X chart");
-    // AX chart axis setting
+
     axisX_ax = new QValueAxis;
     axisX_ax -> setLabelFormat("%i");
     axisX_ax -> setTickCount(1);
@@ -221,11 +210,10 @@ MainWindow::MainWindow(QWidget *parent) :
     chart_ax -> addAxis(axisY_ax, Qt::AlignLeft);
     series_ax -> attachAxis(axisY_ax);
 
-    //AY chart setting
     chart_ay -> legend() -> hide();
     chart_ay -> addSeries(series_ay);
     chart_ay -> setTitle("Acceleration by Y chart");
-    // AX chart axis setting
+
     axisX_ay = new QValueAxis;
     axisX_ay -> setLabelFormat("%i");
     axisX_ay -> setTickCount(1);
@@ -241,11 +229,10 @@ MainWindow::MainWindow(QWidget *parent) :
     chart_ay -> addAxis(axisY_ay, Qt::AlignLeft);
     series_ay -> attachAxis(axisY_ay);
 
-    //AZ chart setting
     chart_az -> legend() -> hide();
     chart_az -> addSeries(series_az);
     chart_az -> setTitle("Acceleration by Z chart");
-    // AZ chart axis setting
+
     axisX_az = new QValueAxis;
     axisX_az -> setLabelFormat("%i");
     axisX_az -> setTickCount(1);
@@ -281,7 +268,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui -> gps_terminal -> setPalette(pGPS);
 
 
-    // COM port settings
 
     QString portNameR , baudRateR , portNameA, baudRateA;
     QSettings sett("settings.ini", QSettings::IniFormat);
@@ -295,9 +281,9 @@ MainWindow::MainWindow(QWidget *parent) :
     baudRateA = sett.value("BAUD_RATE_A", "9600").toString();
     sett.endGroup();
 
-    receiver = new QSerialPort(this); // creating a object of receiver using as radio input
-    serialBuffer = ""; // buffer for data packets
-    parsed_data = ""; // handled version of data packets
+    receiver = new QSerialPort(this);
+    serialBuffer = "";
+    parsed_data = "";
 
     receiver -> setPortName(portNameR);
     receiver -> open(QSerialPort::ReadOnly);
@@ -336,7 +322,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-// Reading data from serial port
 void MainWindow::readSerial()
 {
     QStringList buffer_split = serialBuffer.split("\n");
@@ -366,7 +351,6 @@ void MainWindow::writeToTerminal(QString angles)
     antenna->write(ba);
 }
 
-// Updating data on UI
 void MainWindow::updateData(QString s)
 {
     int l = s.length();
@@ -773,7 +757,6 @@ void MainWindow::updateData(QString s)
             dataGPS.open(QFile::WriteOnly|QFile::Append);
             QTextStream gpsStream(&dataGPS);
 
-            // Updating labels in right side of UI
             if (!damaged[0])
             {
                 ui -> gps_nvalue -> setText(QString::number(n));
@@ -806,7 +789,6 @@ void MainWindow::updateData(QString s)
             }
             dataGPS.close();
 
-            // Calculating antenna angles
             double r1 = 6371200.0 + altStation;
             double x1 = r1 * cos(latStation) * cos(lonStation);
             double y1 = r1 * cos(latStation) * sin(lonStation);
@@ -1017,7 +999,6 @@ void MainWindow::updateData(QString s)
         dataMain.open(QFile::WriteOnly|QFile::Append);
         QTextStream mainStream(&dataMain);
 
-        // Updating labels in right side of UI
         if (!damaged[0])
         {
             ui -> nvalue -> setText(QString::number(n));
@@ -1055,8 +1036,6 @@ void MainWindow::updateData(QString s)
         }
         dataMain.close();
 
-        // et = estimated time
-        // Updating charts and X axis of every chart setting new maximum that is ET
         if (!damaged[1])
         {
             if (et > etMin1)

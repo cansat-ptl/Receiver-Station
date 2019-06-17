@@ -1397,7 +1397,7 @@
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
+         <item row="0" column="0" alignment="Qt::AlignRight">
           <widget class="QLabel" name="label_16">
            <property name="font">
             <font>
@@ -1582,20 +1582,20 @@
        <widget class="QWidget" name="gridLayoutWidget_3">
         <property name="geometry">
          <rect>
-          <x>670</x>
+          <x>650</x>
           <y>319</y>
-          <width>331</width>
+          <width>371</width>
           <height>121</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
+         <item row="0" column="0" alignment="Qt::AlignRight">
           <widget class="QLabel" name="label_20">
            <property name="font">
             <font>
              <pointsize>14</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <weight>50</weight>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -1608,8 +1608,8 @@
            <property name="font">
             <font>
              <pointsize>14</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <weight>50</weight>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
