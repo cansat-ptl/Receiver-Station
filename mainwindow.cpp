@@ -822,7 +822,7 @@ void MainWindow::updateData(QString s)
             double d = abs(z2 - z1);
             double e = sqrt(c * c + d * d);
             double alpha = acos(a / c);
-            double beta = asin(d / e);4
+            double beta = asin(d / e);
             ui -> angle_alpha -> setText(QString::number(alpha));
             ui -> angle_beta -> setText(QString::number(beta));
             int rndAlpha = int(alpha);
