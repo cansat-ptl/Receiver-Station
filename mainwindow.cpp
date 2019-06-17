@@ -814,9 +814,20 @@ void MainWindow::updateData(QString s)
             double x2 = r2 * cos(latStation) * cos(lonStation);
             double y2 = r2 * cos(latStation) * sin(lonStation);
             double z2 = r2 * sin(latStation);
-            double alpha = atan(abs(y2 - y1) / abs(x2 - x1)) * 180/M_PI;
+            double alpha = atan2(abs(y2 - y1), abs(x2 - x1)) * 180 / M_PI;
+            if (alpha <= -180)
+                alpha += 360;
+            if (alpha > 180)
+                alpha -= 360;
             double hypot = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
             double beta = atan(abs(z2 - z1) / hypot) * 180/M_PI;
+            if (beta < 0)
+                beta = 0;
+            if (alpha < 0)
+            {
+                alpha += 180;
+                beta = 180 - beta;
+            }
             ui -> angle_alpha -> setText(QString::number(alpha));
             ui -> angle_beta -> setText(QString::number(beta));
             int rndAlpha = int(alpha);
