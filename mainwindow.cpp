@@ -768,6 +768,7 @@ void MainWindow::updateData(QString s)
                 ui -> statusBar -> showMessage("Последний пакет принят с повреждениями, данные могут быть неточны");
                 ui -> gps_terminal -> append(s.trimmed() + "\t OK");
             }
+
             QFile dataGPS(".\\CSVs\\data_gps.csv");
             dataGPS.open(QFile::WriteOnly|QFile::Append);
             QTextStream gpsStream(&dataGPS);
@@ -823,10 +824,16 @@ void MainWindow::updateData(QString s)
             double e = sqrt(c * c + d * d);
             double alpha = acos(a / c);
             double beta = asin(d / e);
+
+            ui -> xyz_station -> setText(QString::number(x1) + " " + QString::number(y1) + " " + QString::number(z1));
+            ui -> xyz_sat -> setText(QString::number(x2) + " " + QString::number(y2) + " " + QString::number(z2));
+
             ui -> angle_alpha -> setText(QString::number(alpha));
             ui -> angle_beta -> setText(QString::number(beta));
+
             int rndAlpha = int(alpha);
             int rndBeta = int(beta);
+
             writeToTerminal("A=" + QString::number(rndAlpha) + ";" + "B=" + QString::number(rndBeta) + ";");
     }
     else if (type == "MAIN")
