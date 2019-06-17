@@ -760,7 +760,7 @@ void MainWindow::updateData(QString s)
             }
             if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5])
             {
-                ui -> statusBar -> showMessage("Пакет ориентации №" + QString::number(n) + " получен удачно.");
+                ui -> statusBar -> showMessage("Пакет GPS №" + QString::number(n) + " получен удачно.");
                 ui -> gps_terminal -> append(s.trimmed() + "\t OK");
             }
             else
@@ -806,28 +806,23 @@ void MainWindow::updateData(QString s)
             dataGPS.close();
 
             // Calculating antenna angles
-            double r1 = 6371200.0 + alt;
-            double x1 = r1 * cos(lat) * cos(lon);
-            double y1 = r1 * cos(lat) * sin(lon);
-            double z1 = r1 * sin(lat);
-            double r2 = 6371200.0 + altStation;
-            double x2 = r2 * cos(latStation) * cos(lonStation);
-            double y2 = r2 * cos(latStation) * sin(lonStation);
-            double z2 = r2 * sin(latStation);
-            double alpha = atan2(abs(y2 - y1), abs(x2 - x1)) * 180 / M_PI;
-            if (alpha <= -180)
-                alpha += 360;
-            if (alpha > 180)
-                alpha -= 360;
-            double hypot = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-            double beta = atan(abs(z2 - z1) / hypot) * 180/M_PI;
-            if (beta < 0)
-                beta = 0;
-            if (alpha < 0)
-            {
-                alpha += 180;
-                beta = 180 - beta;
-            }
+            double r1 = 6371200.0 + altStation;
+            double x1 = r1 * cos(latStation) * cos(lonStation);
+            double y1 = r1 * cos(latStation) * sin(lonStation);
+            double z1 = r1 * sin(latStation);
+
+            double r2 = 6371200.0 + alt;
+            double x2 = r2 * cos(lat) * cos(lon);
+            double y2 = r2 * cos(lat) * sin(lon);
+            double z2 = r2 * sin(lat);
+
+            double a = abs(y2 - y1);
+            double b = abs(x2 - x1);
+            double c = sqrt(a * a + b * b);
+            double d = abs(z2 - z1);
+            double e = sqrt(c * c + d * d);
+            double alpha = acos(a / c);
+            double beta = asin(d / e);4
             ui -> angle_alpha -> setText(QString::number(alpha));
             ui -> angle_beta -> setText(QString::number(beta));
             int rndAlpha = int(alpha);
