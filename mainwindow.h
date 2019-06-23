@@ -125,6 +125,7 @@ private:
 
     bool mainCreated = false;
     bool orientCreated = false;
+    bool first = true;
 };
 
 

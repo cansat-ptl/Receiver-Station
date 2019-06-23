@@ -1579,53 +1579,149 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="gridLayoutWidget_3">
+       <widget class="QLabel" name="label_22">
         <property name="geometry">
          <rect>
-          <x>650</x>
-          <y>319</y>
-          <width>371</width>
-          <height>121</height>
+          <x>470</x>
+          <y>380</y>
+          <width>181</width>
+          <height>57</height>
          </rect>
         </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0" alignment="Qt::AlignRight">
-          <widget class="QLabel" name="label_20">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>CanSat XYZ</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_20">
+        <property name="geometry">
+         <rect>
+          <x>470</x>
+          <y>320</y>
+          <width>181</width>
+          <height>57</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Station XYZ</string>
+        </property>
+       </widget>
+       <widget class="QWidget" name="gridLayoutWidget_4">
+        <property name="geometry">
+         <rect>
+          <x>730</x>
+          <y>80</y>
+          <width>211</width>
+          <height>80</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_23">
            <property name="font">
             <font>
              <pointsize>14</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
             </font>
            </property>
            <property name="text">
-            <string>Station XYZ</string>
+            <string>Flipped? </string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLabel" name="label_22">
+          <widget class="QLabel" name="flipped">
            <property name="font">
             <font>
-             <pointsize>14</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
+             <pointsize>16</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
             </font>
            </property>
-           <property name="text">
-            <string>CanSat XYZ</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="xyz_station">
            <property name="text">
             <string/>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+        </layout>
+       </widget>
+       <widget class="QLabel" name="label_24">
+        <property name="geometry">
+         <rect>
+          <x>470</x>
+          <y>442</y>
+          <width>181</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Distance</string>
+        </property>
+       </widget>
+       <widget class="QWidget" name="verticalLayoutWidget_4">
+        <property name="geometry">
+         <rect>
+          <x>659</x>
+          <y>320</y>
+          <width>341</width>
+          <height>171</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="xyz_station">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QLabel" name="xyz_sat">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="dist">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string/>
            </property>

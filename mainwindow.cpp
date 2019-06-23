@@ -306,6 +306,24 @@ MainWindow::MainWindow(QWidget *parent) :
     antenna -> setStopBits(QSerialPort::OneStop);
     antenna -> flush();
 
+    QFile dataOrient(".\\CSVs\\data_orient.csv");
+    dataOrient.open(QFile::WriteOnly|QFile::Append);
+    QTextStream orientStream(&dataOrient);
+    orientStream << "N,ET,AX,AY,AZ\n";
+    dataOrient.close();
+
+    QFile dataGPS(".\\CSVs\\data_gps.csv");
+    dataGPS.open(QFile::WriteOnly|QFile::Append);
+    QTextStream gpsStream(&dataGPS);
+    gpsStream << "N,ET,LAT,LON,SAT,ALT\n";
+    dataGPS.close();
+
+    QFile dataMain(".\\CSVs\\data_main.csv");
+    dataMain.open(QFile::WriteOnly|QFile::Append);
+    QTextStream mainStream(&dataMain);
+    mainStream << "N,ET,VBAT,ALT,PRS,T1,T2\n";
+    dataMain.close();
+
 }
 
 void MainWindow::on_reconnectButtonR_clicked()
@@ -335,11 +353,6 @@ void MainWindow::readSerial()
     {
         serialBuffer = "";
         parsed_data = buffer_split[0];
-        QFile dataPackets(".\\CSVs\\data_packets.csv");
-        dataPackets.open(QFile::WriteOnly|QFile::Append);
-        QTextStream packetStream(&dataPackets);
-        packetStream << parsed_data << "\n";
-        dataPackets.close();
         MainWindow::updateData(parsed_data);
     }
 }
@@ -354,6 +367,11 @@ void MainWindow::writeToTerminal(QString angles)
 void MainWindow::updateData(QString s)
 {
     int l = s.length();
+    QFile dataPackets(".\\CSVs\\data_packets.txt");
+    dataPackets.open(QFile::WriteOnly|QFile::Append);
+    QTextStream packetStream(&dataPackets);
+    packetStream << s << "\n";
+    dataPackets.close();
     QString temp = "";
     QString type = "";
     for (int j = 0; j < l; j++)
@@ -377,7 +395,7 @@ void MainWindow::updateData(QString s)
 
     if (type == "ORIENT")
     {
-        int n = 0, et = 0, rawAx = 0, rawAy = 0, rawAz = 0, i = 0;
+        int n = 0, et = 0, rawAx = 0, rawAy = 0, rawAz = 0, i = 0, pitchRaw = 0, yawRaw = 0, rollRaw = 0;
         bool damaged[5] = {false};
 
         for (i = 0; i < l; i++)
@@ -484,9 +502,73 @@ void MainWindow::updateData(QString s)
                     }
                 }
             }
-        }
+            if (s[i] == '=')
+            {
+                if (s[i - 1] == 'H')
+                {
+                    if (s[i - 2] == 'C')
+                    {
+                        while (s[i + 1] != ';')
+                        {
+                            temp += s[i + 1];
+                            i++;
+                            if (temp.length() > 10)
+                            {
+                                damaged[4] = true;
+                                break;
+                            }
+                        }
+                        pitchRaw = temp.toInt();
+                        temp = "";
+                    }
+                }
+            }
+            if (s[i] == '=')
+            {
+                if (s[i - 1] == 'W')
+                {
+                    if (s[i - 2] == 'A')
+                    {
+                        while (s[i + 1] != ';')
+                        {
+                            temp += s[i + 1];
+                            i++;
+                            if (temp.length() > 10)
+                            {
+                                damaged[4] = true;
+                                break;
+                            }
+                        }
+                        yawRaw = temp.toInt();
+                        temp = "";
+                    }
+                }
+            }
+            if (s[i] == '=')
+            {
+                if (s[i - 1] == 'L')
+                {
+                    if (s[i - 2] == 'L')
+                    {
+                        while (s[i + 1] != ';')
+                        {
+                            temp += s[i + 1];
+                            i++;
+                            if (temp.length() > 10)
+                            {
+                                damaged[4] = true;
+                                break;
+                            }
+                        }
+                        rollRaw = temp.toInt();
+                        temp = "";
+                    }
+                }
+            }
+        }//
 
         double ax = (double(rawAx) / 10.0) * 9.81, ay = (double(rawAy) / 10.0) * 9.81, az = (double(rawAz) / 10.0) * 9.81;
+        double pitch = double(pitchRaw) /10.0, yaw = double(yawRaw) / 10.0, roll = double(rollRaw) / 10.0;
 
         if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4])
         {
@@ -529,6 +611,25 @@ void MainWindow::updateData(QString s)
             orientStream << az << "\n";
         }
         dataOrient.close();
+
+        QString packet;
+        QFile dataPYR(".\\animation\\data.js");
+        dataPYR.open(QFile::WriteOnly|QFile::Append);
+        QTextStream pyrStream(&dataPYR);
+        if(!first)
+        {
+        qint64 size = dataPYR.size();
+        dataPYR.resize(size - 3);
+        packet = ",\n{TIME:" + QString::number(et) + ", ALT:" + QString::number(altBar) + ", ACL_X:" + QString::number(ax) + ", ACL_Y:" + QString::number(ay) + ", ACL_Z:" + QString::number(az) + ", PITCH:" + QString::number(pitch) + ", ROLL:" + QString::number(roll) + ", HEAD:" + QString::number(yaw) + "}\n);";
+        }
+        if(first)
+        {
+        pyrStream << "var data = new Array(\n";
+        packet = "{TIME:" + QString::number(et) + ", ALT:" + QString::number(altBar) + ", ACL_X:" + QString::number(ax) + ", ACL_Y:" + QString::number(ay) + ", ACL_Z:" + QString::number(az) + ", PITCH:" + QString::number(pitch) + ", ROLL:" + QString::number(roll) + ", HEAD:" + QString::number(yaw) + "}\n);";
+        first = false;
+        }
+        pyrStream << packet;
+        dataPYR.close();
 
         if (!damaged[1])
         {
@@ -753,10 +854,11 @@ void MainWindow::updateData(QString s)
                 ui -> gps_terminal -> append(s.trimmed() + "\t OK");
             }
 
+            altBar = alt;
+
             QFile dataGPS(".\\CSVs\\data_gps.csv");
             dataGPS.open(QFile::WriteOnly|QFile::Append);
             QTextStream gpsStream(&dataGPS);
-
             if (!damaged[0])
             {
                 ui -> gps_nvalue -> setText(QString::number(n));
@@ -801,14 +903,31 @@ void MainWindow::updateData(QString s)
 
             double a = abs(y2 - y1);
             double b = abs(x2 - x1);
-            double c = sqrt(a * a + b * b);
-            double d = abs(z2 - z1);
-            double e = sqrt(c * c + d * d);
-            double alpha = acos(a / c);
-            double beta = asin(d / e);
+            double c = hypot(a, b) / 100.0;
+            double d = hypot(c, alt - altStation);
 
-            ui -> xyz_station -> setText(QString::number(x1) + " " + QString::number(y1) + " " + QString::number(z1));
-            ui -> xyz_sat -> setText(QString::number(x2) + " " + QString::number(y2) + " " + QString::number(z2));
+            double alpha = atan2(x2 - x1, y2 - y1) * 180 / M_PI;
+            double beta = atan((alt - altStation) / c) * 180 / M_PI;
+
+
+            if (alpha < 0)
+            {
+                alpha += 180;
+                beta = 180 - beta;
+                ui -> flipped -> setText("YES");
+            }
+            else
+            {
+                ui -> flipped -> setText("NO");
+            }
+            if (beta < 0)
+            {
+                beta = 0;
+            }
+
+            ui -> xyz_station -> setText(QString::number(int(x1)) + " " + QString::number(int(y1)) + " " + QString::number(int(z1)));
+            ui -> xyz_sat -> setText(QString::number(int(x2)) + " " + QString::number(int(y2)) + " " + QString::number(int(z2)));
+            ui -> dist -> setText(QString::number(d));
 
             ui -> angle_alpha -> setText(QString::number(alpha));
             ui -> angle_beta -> setText(QString::number(beta));
@@ -984,7 +1103,7 @@ void MainWindow::updateData(QString s)
         }
         double alt = double(altRaw)/10.0, t1 = double(t1Raw)/10.0, t2 = double(t2Raw)/10.0;
         double vbat = double(vbatRaw) / 10.0;
-        int prs = double(prsRaw) / 10000;
+        int prs = prsRaw / 10000;
         if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4] && !damaged[5] && !damaged[6])
         {
             ui -> statusBar -> showMessage("Главный пакет №" + QString::number(n) + " получен удачно.");
@@ -995,10 +1114,11 @@ void MainWindow::updateData(QString s)
             ui -> statusBar -> showMessage("Последний пакет принят с повреждениями, данные могут быть неточны");
             ui -> main_terminal -> append(s.trimmed() + "\t DAMAGED");
         }
+
+        altBar = alt;
         QFile dataMain(".\\CSVs\\data_main.csv");
         dataMain.open(QFile::WriteOnly|QFile::Append);
         QTextStream mainStream(&dataMain);
-
         if (!damaged[0])
         {
             ui -> nvalue -> setText(QString::number(n));
