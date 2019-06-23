@@ -15,5 +15,5 @@ receiver must send in COM port data packets with format "NAME:[packetname]:[data
 
 # Compilation/editing info:
 Qt 5.12.3
-minGW 7.3.0 64-bit
 
+minGW 7.3.0 64-bit
