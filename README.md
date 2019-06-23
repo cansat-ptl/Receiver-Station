@@ -13,3 +13,7 @@ receiver must send in COM port data packets with format "NAME:[packetname]:[data
 "YKTSAT5:ORIENT:N=15;ET=27;AX=83;AY=140;AZ=-60;\r\n"
 "YKTSAT5:GPS:N=12;ET=12;SAT=5;LAT=61.230;LON=129.154;ALT=200;\r\n"
 
+# Compilation/editing info:
+Qt 5.12.3
+minGW 7.3.0 64-bit
+
