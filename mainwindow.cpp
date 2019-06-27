@@ -567,7 +567,7 @@ void MainWindow::updateData(QString s)
             }
         }//
 
-        double ax = (double(rawAx) / 10.0) * 9.81, ay = (double(rawAy) / 10.0) * 9.81, az = (double(rawAz) / 10.0) * 9.81;
+        double ax = (double(rawAx) / 100.0) * 9.81, ay = (double(rawAy) / 100.0) * 9.81, az = (double(rawAz) / 100.0) * 9.81;
         double pitch = double(pitchRaw) /10.0, yaw = double(yawRaw) / 10.0, roll = double(rollRaw) / 10.0;
 
         if (!damaged[0] && !damaged[1] && !damaged[2] && !damaged[3] && !damaged[4])
@@ -927,10 +927,10 @@ void MainWindow::updateData(QString s)
 
             ui -> xyz_station -> setText(QString::number(int(x1)) + " " + QString::number(int(y1)) + " " + QString::number(int(z1)));
             ui -> xyz_sat -> setText(QString::number(int(x2)) + " " + QString::number(int(y2)) + " " + QString::number(int(z2)));
-            ui -> dist -> setText(QString::number(d));
+            ui -> dist -> setText(QString::number(d) + " m");
 
-            ui -> angle_alpha -> setText(QString::number(alpha));
-            ui -> angle_beta -> setText(QString::number(beta));
+            ui -> angle_alpha -> setText(QString::number(alpha) + "°");
+            ui -> angle_beta -> setText(QString::number(beta) + "°");
 
             int rndAlpha = int(alpha);
             int rndBeta = int(beta);
