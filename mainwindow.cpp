@@ -698,8 +698,8 @@ void MainWindow::updateData(QString s)
     }
     else if (type == "GPS")
     {
-        int i = 0, n = 0, et = 0, alt = 0, sat = 0;
-        double lat = 0, lon = 0;
+        int i = 0, n = 0, et = 0, sat = 0;
+        double lat = 0, lon = 0, alt = 0;
         temp = "";
         bool damaged[6] = {false};
             for (i = 0; i < l; i++)
@@ -891,6 +891,7 @@ void MainWindow::updateData(QString s)
             }
             dataGPS.close();
 
+            alt = alt / 10.0;
             double r1 = 6371200.0 + altStation;
             double x1 = r1 * cos(latStation) * cos(lonStation);
             double y1 = r1 * cos(latStation) * sin(lonStation);
