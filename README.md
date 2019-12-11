@@ -1,5 +1,5 @@
 # Handler of CanSat data packets
-Created by Anatoly Antonov ( https://github.com/champi2061 ) for 8-th Russian Championship of project "Air Engineering School" 2019 ( http://roscansat.com )
+Created by Anatoly Antonov ( https://github.com/awend0 ) for 8-th Russian Championship of project "Air Engineering School" 2019 ( http://roscansat.com )
 
 # How to use:
 1) Run test.exe (from "test" folder), look for your COM ports names and its baud rate. Example: "COM3" , "Baudrate: 9600" , etc.
